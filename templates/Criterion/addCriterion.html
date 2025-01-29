@@ -1,0 +1,689 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Assessment Criteria{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Course Selection Section -->
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+        <h2 class="text-xl font-semibold text-gray-800 mb-6">Course Selection</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Program Dropdown -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Program</label>
+                <select id="programSelect" onchange="handleProgramChange()" class="w-full border border-gray-300 rounded-md py-2 px-3">
+                  <option value="">Select Program</option>
+                  {% for program in programs %}
+                      <option value="{{ program.id }}">{{ program.name }}</option>
+                  {% endfor %}
+              </select>
+            </div>
+
+            <!-- Batch Dropdown -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Batch</label>
+              <select id="batchSelect" onchange="handleBatchChange()" class="w-full border border-gray-300 rounded-md py-2 px-3" disabled>
+                <option value="">Select Batch</option>
+              </select>
+            </div>
+
+            <!-- Course Dropdown -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Course</label>
+                <select id="courseSelect" onchange="handleCourseChange()" class="w-full border border-gray-300 rounded-md py-2 px-3" disabled>
+                  <option value="">Select Course</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Course Details -->
+        <div id="courseDetails" class="mt-6 p-4 bg-gray-50 rounded-md hidden">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-600">Course Code</label>
+                    <span id="courseCode" class="text-gray-900"></span>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-600">Total Credits</label>
+                    <span id="totalCredits" class="text-gray-900"></span>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-600">CA Contribution</label>
+                    <span id="caContribution" class="text-gray-900"></span>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-600">FE Contribution</label>
+                    <span id="feContribution" class="text-gray-900"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Criteria Section -->
+    <div class="bg-white rounded-lg shadow-sm p-6">
+        <div class="border-b border-gray-200">
+            <nav class="-mb-px flex space-x-8">
+                <button id="caTab" onclick="switchTab('ca')" 
+                    class="border-b-2 border-blue-500 py-4 px-1 text-sm font-medium text-blue-600">
+                    Continuous Assessment
+                </button>
+                <button id="feTab" onclick="switchTab('fe')"
+                    class="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                    Final Examination
+                </button>
+            </nav>
+        </div>
+
+        <!-- CA Form -->
+        <div id="caSection" class="mt-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Number of Assignments</label>
+                    <input type="number" id="caQuestions" class="w-full border border-gray-300 rounded-md py-2 px-3" 
+                           min="1" max="10" placeholder="Enter number of assignments">
+                </div>
+                <div class="flex items-end">
+                    <button onclick="addCriteriaGroup('CA')" 
+                            class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+                        Add Assignments
+                    </button>
+                </div>
+            </div>
+            
+
+            <!-- CA Summary -->
+            <div class="mt-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">CA Summary</h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nature</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Weight</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="caSummaryBody" class="bg-white divide-y divide-gray-200"></tbody>
+                    </table>
+                </div>
+                <div class="mt-4 flex justify-between items-center">
+                    <span class="text-sm text-gray-600">Total Weight: <span id="caTotalWeight">0</span>%</span>
+                    <button onclick="submitCriteria('CA')" id="submitCABtn" 
+                            class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 disabled:bg-gray-400"
+                            disabled>
+                        Submit CA Criteria
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- FE Form -->
+        <div id="feSection" class="mt-6 hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Number of Questions</label>
+                    <input type="number" id="feQuestions" class="w-full border border-gray-300 rounded-md py-2 px-3" 
+                           min="1" max="10" placeholder="Enter number of questions">
+                </div>
+                <div class="flex items-end">
+                    <button onclick="addCriteriaGroup('FE')" 
+                            class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+                        Add Questions
+                    </button>
+                </div>
+            </div>
+
+            <!-- FE Summary -->
+            <div class="mt-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">FE Summary</h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nature</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Weight</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="feSummaryBody" class="bg-white divide-y divide-gray-200"></tbody>
+                    </table>
+                </div>
+                <div class="mt-4 flex justify-between items-center">
+                    <span class="text-sm text-gray-600">Total Weight: <span id="feTotalWeight">0</span>%</span>
+                    <button onclick="submitCriteria('FE')" id="submitFEBtn" 
+                            class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 disabled:bg-gray-400"
+                            disabled>
+                        Submit FE Criteria
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let state = {
+    courseId: null,
+    caCriteria: [],
+    feCriteria: [],
+    caSubmitted: false,
+    feSubmitted: false,
+    lastCANumber: 0, 
+    lastFENumber: 0 
+};
+
+function generateNatureOptions(type, selectedNature) {
+    const natures = type === 'ca' ? ['In class', 'Quiz'] : ['Essay', 'MCQ'];
+    return natures.map(nature => 
+        `<option value="${nature}" ${nature === selectedNature ? 'selected' : ''}>${nature}</option>`
+    ).join('');
+}
+
+function updateCriterionNature(type, index, newNature) {
+    const criteria = type === 'ca' ? state.caCriteria : state.feCriteria;
+    criteria[index].nature = newNature;
+    updateSummaryTable(type);
+}
+
+
+// Initialize event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    initializeDropdowns();
+});
+
+function initializeDropdowns() {
+  const batchSelect = document.getElementById('batchSelect');
+  const courseSelect = document.getElementById('courseSelect');
+  
+  batchSelect.disabled = true;
+  courseSelect.disabled = true;
+}
+
+async function handleProgramChange() {
+  const programId = document.getElementById('programSelect').value;
+  console.log('Selected program ID:', programId);  // Debug log
+  
+  const batchSelect = document.getElementById('batchSelect');
+  const courseSelect = document.getElementById('courseSelect');
+  const courseDetails = document.getElementById('courseDetails');
+
+  // Reset dependent dropdowns and course details
+  batchSelect.innerHTML = '<option value="">Select Batch</option>';
+  courseSelect.innerHTML = '<option value="">Select Course</option>';
+  courseDetails.classList.add('hidden');
+  
+  batchSelect.disabled = !programId;
+  courseSelect.disabled = true;
+
+  if (programId) {
+      try {
+          // Note the lowercase 'criterion' in the URL
+          const response = await fetch(`/criterion/get_batches/?program_id=${programId}`);
+          console.log('Response status:', response.status);  // Debug log
+          
+          if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+          }
+          
+          const data = await response.json();
+          console.log('Received data:', data);  // Debug log
+          
+          if (data.batches && data.batches.length > 0) {
+              data.batches.forEach(batch => {
+                  const option = document.createElement('option');
+                  option.value = batch.id;
+                  option.textContent = batch.name;
+                  batchSelect.appendChild(option);
+              });
+              batchSelect.disabled = false;
+          } else {
+              batchSelect.innerHTML = '<option value="">No batches available</option>';
+          }
+      } catch (error) {
+          console.error('Error fetching batches:', error);
+          alert('Error loading batches: ' + error.message);
+      }
+  }
+  
+  state.courseId = null;
+  resetCriteriaState();
+}
+
+
+function addCriteriaGroup(type) {
+    if (!state.courseId) {
+        alert('Please select a course first');
+        return;
+    }
+
+    const numQuestions = parseInt(document.getElementById(`${type.toLowerCase()}Questions`).value);
+    if (!numQuestions || numQuestions <= 0) return;
+
+    const currentCriteria = type === 'CA' ? state.caCriteria : state.feCriteria;
+    const lastNumber = Math.max(...currentCriteria.map(c => {
+        const match = c.name.match(/\d+/);
+        return match ? parseInt(match[0]) : 0;
+    }), 0);
+
+    const defaultNature = type === 'CA' ? 'In class' : 'Essay';
+    const remainingWeight = 100 - currentCriteria.reduce((sum, item) => sum + item.weight, 0);
+    
+    if (remainingWeight <= 0) {
+        alert('Total weight has already reached 100%');
+        return;
+    }
+
+    const weightPerQuestion = Math.floor(remainingWeight / numQuestions);
+    const extraWeight = remainingWeight % numQuestions;
+
+    for (let i = 0; i < numQuestions; i++) {
+        const currentNumber = lastNumber + i + 1;
+        const weight = i === 0 ? weightPerQuestion + extraWeight : weightPerQuestion;
+        
+        const newCriterion = {
+            name: `${type} ${currentNumber}`,
+            nature: defaultNature,
+            type: type,
+            weight: weight,
+            isEditable: true
+        };
+
+        if (type === 'CA') {
+            state.caCriteria.push(newCriterion);
+        } else {
+            state.feCriteria.push(newCriterion);
+        }
+    }
+
+    updateSummaryTable(type.toLowerCase());
+    document.getElementById(`${type.toLowerCase()}Questions`).value = '';
+}
+
+
+async function handleBatchChange() {
+  const batchId = document.getElementById('batchSelect').value;
+  console.log('Selected batch ID:', batchId);  // Debug log
+  
+  const courseSelect = document.getElementById('courseSelect');
+  const courseDetails = document.getElementById('courseDetails');
+
+  // Reset course dropdown and details
+  courseSelect.innerHTML = '<option value="">Select Course</option>';
+  courseDetails.classList.add('hidden');
+  courseSelect.disabled = !batchId;
+
+  if (batchId) {
+      try {
+          const response = await fetch(`/criterion/get_courses/?batch_id=${batchId}`);
+          console.log('Response status:', response.status);  // Debug log
+          
+          if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+          }
+          
+          const data = await response.json();
+          console.log('Received courses:', data);  // Debug log
+          
+          if (data.courses && data.courses.length > 0) {
+              data.courses.forEach(course => {
+                  const option = document.createElement('option');
+                  option.value = course.id;
+                  option.textContent = course.subjects__name;
+                  courseSelect.appendChild(option);
+              });
+              courseSelect.disabled = false;
+          } else {
+              courseSelect.innerHTML = '<option value="">No courses available</option>';
+          }
+      } catch (error) {
+          console.error('Error fetching courses:', error);
+          alert('Error loading courses: ' + error.message);
+      }
+  }
+  
+  state.courseId = null;
+  resetCriteriaState();
+}
+
+async function handleCourseChange() {
+    const courseId = document.getElementById('courseSelect').value;
+    const courseDetails = document.getElementById('courseDetails');
+    
+    if (courseId) {
+        try {
+            // Get course details and existing criteria
+            const [courseResponse, criteriaResponse] = await Promise.all([
+                fetch(`/criterion/get_courses/?course_id=${courseId}`),
+                fetch(`/criterion/get_criteria/?course_id=${courseId}`)
+            ]);
+
+            if (!courseResponse.ok || !criteriaResponse.ok) 
+                throw new Error('Network response was not ok');
+
+            const [courseData, criteriaData] = await Promise.all([
+                courseResponse.json(),
+                criteriaResponse.json()
+            ]);
+
+            if (courseData.courses && courseData.courses.length > 0) {
+                const course = courseData.courses[0];
+                
+                // Update course details display
+                document.getElementById('courseCode').textContent = course.subjects__code;
+                document.getElementById('totalCredits').textContent = course.subjects__total_credit;
+                document.getElementById('caContribution').textContent = `${course.subjects__ca}%`;
+                document.getElementById('feContribution').textContent = `${course.subjects__fe}%`;
+                
+                courseDetails.classList.remove('hidden');
+                state.courseId = courseId;
+
+                // Reset and populate criteria
+                resetCriteriaState();
+
+                // Populate state with existing criteria
+                criteriaData.criteria.forEach(criterion => {
+                    const criterionObj = {
+                        id: criterion.id,
+                        name: criterion.name,
+                        nature: criterion.nature,
+                        type: criterion.type,
+                        weight: criterion.weights,
+                        isExisting: true
+                    };
+
+                    if (criterion.type === 'CA') {
+                        state.caCriteria.push(criterionObj);
+                    } else {
+                        state.feCriteria.push(criterionObj);
+                    }
+                });
+
+                // Update tables
+                updateSummaryTable('ca');
+                updateSummaryTable('fe');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error loading course details');
+        }
+    } else {
+        courseDetails.classList.add('hidden');
+        state.courseId = null;
+        resetCriteriaState();
+    }
+}
+
+
+function resetCriteriaState() {
+    state.caCriteria = [];
+    state.feCriteria = [];
+    state.caSubmitted = false;
+    state.feSubmitted = false;
+    state.caCount = 0; 
+    state.feCount = 0;
+    state.lastCANumber = 0;  // Reset CA numbering
+    state.lastFENumber = 0;  // Reset FE numbering
+    
+    document.getElementById('caSummaryBody').innerHTML = '';
+    document.getElementById('feSummaryBody').innerHTML = '';
+    document.getElementById('caTotalWeight').textContent = '0';
+    document.getElementById('feTotalWeight').textContent = '0';
+    document.getElementById('submitCABtn').disabled = true;
+    document.getElementById('submitFEBtn').disabled = true;
+}
+
+function switchTab(tab) {
+    const caSection = document.getElementById('caSection');
+    const feSection = document.getElementById('feSection');
+    const caTab = document.getElementById('caTab');
+    const feTab = document.getElementById('feTab');
+
+    if (tab === 'ca') {
+        caSection.classList.remove('hidden');
+        feSection.classList.add('hidden');
+        caTab.classList.add('border-blue-500', 'text-blue-600');
+        caTab.classList.remove('border-transparent', 'text-gray-500');
+        feTab.classList.remove('border-blue-500', 'text-blue-600');
+        feTab.classList.add('border-transparent', 'text-gray-500');
+    } else {
+        feSection.classList.remove('hidden');
+        caSection.classList.add('hidden');
+        feTab.classList.add('border-blue-500', 'text-blue-600');
+        feTab.classList.remove('border-transparent', 'text-gray-500');
+        caTab.classList.remove('border-blue-500', 'text-blue-600');
+        caTab.classList.add('border-transparent', 'text-gray-500');
+    }
+}
+
+async function addCriteria(type) {
+    if (!state.courseId) {
+        alert('Please select a course first');
+        return;
+    }
+
+    const nature = document.getElementById(`${type.toLowerCase()}Nature`).value;
+    const weight = parseInt(document.getElementById(`${type.toLowerCase()}Weight`).value);
+
+    if (!nature || !weight) {
+        alert('Please fill in all fields');
+        return;
+    }
+
+    if (weight <= 0 || weight > 100) {
+        alert('Weight must be between 1 and 100');
+        return;
+    }
+
+    // Calculate total weight including new addition
+    const currentCriteria = type === 'CA' ? state.caCriteria : state.feCriteria;
+    const totalWeight = currentCriteria.reduce((sum, item) => sum + item.weight, 0) + weight;
+
+    if (totalWeight > 100) {
+        alert('Total weight cannot exceed 100%');
+        return;
+    }
+
+    try {
+        // Get the next criterion name
+        const response = await fetch(`/criterion/get_next_ca_number/?course_id=${state.courseId}&type=${type}`);
+        const data = await response.json();
+
+        const newCriterion = {
+            name: data.name,
+            nature: nature,
+            type: type,
+            weight: weight
+        };
+
+        if (type === 'CA') {
+          state.caCount++;
+          const newCriterion = {
+              name: `CA ${state.caCount}`,
+              nature: nature,
+              type: type,
+              weight: weight
+          };
+          state.caCriteria.push(newCriterion);
+          updateSummaryTable('ca');
+      } else {
+          state.feCount++;
+          const newCriterion = {
+              name: `Q ${state.feCount}`,
+              nature: nature,
+              type: type,
+              weight: weight
+          };
+          state.feCriteria.push(newCriterion);
+          updateSummaryTable('fe');
+      }
+  
+
+        // Reset input fields
+        document.getElementById(`${type.toLowerCase()}Nature`).value = '';
+        document.getElementById(`${type.toLowerCase()}Weight`).value = '';
+
+        // Update submit button state
+        updateSubmitButtonState(type);
+    } catch (error) {
+        console.error('Error getting next criterion name:', error);
+        alert('Error adding criterion');
+    }
+}
+
+
+
+function updateSummaryTable(type) {
+    const criteria = type === 'ca' ? state.caCriteria : state.feCriteria;
+    const tbody = document.getElementById(`${type}SummaryBody`);
+    const totalWeightSpan = document.getElementById(`${type}TotalWeight`);
+    
+    tbody.innerHTML = '';
+    let totalWeight = 0;
+
+    criteria.forEach((criterion, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${criterion.name}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <select onchange="updateCriterionNature('${type}', ${index}, this.value)" 
+                        class="border border-gray-300 rounded-md px-2 py-1">
+                    ${generateNatureOptions(type, criterion.nature)}
+                </select>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <input type="number" 
+                       value="${criterion.weight}" 
+                       class="border border-gray-300 rounded-md px-2 py-1 w-20"
+                       onchange="updateCriterionWeight('${type}', ${index}, this.value)">%
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <button onclick="removeCriterion('${type}', ${index})" 
+                        class="text-red-600 hover:text-red-900">
+                    Remove
+                </button>
+            </td>
+        `;
+        tbody.appendChild(row);
+        totalWeight += criterion.weight;
+    });
+
+    totalWeightSpan.textContent = totalWeight;
+    updateSubmitButtonState(type.toUpperCase());
+}
+
+
+// Add new function to handle weight updates
+function updateCriterionWeight(type, index, newWeight) {
+    const criteria = type === 'ca' ? state.caCriteria : state.feCriteria;
+    const oldWeight = criteria[index].weight;
+    const newWeightNum = parseInt(newWeight);
+
+    // Calculate new total weight
+    const totalWeight = criteria.reduce((sum, item) => sum + item.weight, 0) - oldWeight + newWeightNum;
+
+    if (totalWeight > 100) {
+        alert('Total weight cannot exceed 100%');
+        updateSummaryTable(type); // Reset to previous state
+        return;
+    }
+
+    criteria[index].weight = newWeightNum;
+    updateSummaryTable(type);
+}
+
+function removeCriterion(type, index) {
+    if (type === 'ca') {
+        state.caCriteria.splice(index, 1);
+        updateSummaryTable('ca');
+    } else {
+        state.feCriteria.splice(index, 1);
+        updateSummaryTable('fe');
+    }
+}
+
+function updateSubmitButtonState(type) {
+    const criteria = type === 'CA' ? state.caCriteria : state.feCriteria;
+    const submitBtn = document.getElementById(`submit${type}Btn`);
+    const totalWeight = criteria.reduce((sum, item) => sum + item.weight, 0);
+    
+    submitBtn.disabled = totalWeight !== 100 || (type === 'CA' ? state.caSubmitted : state.feSubmitted);
+}
+
+async function submitCriteria(type) {
+    const criteria = type === 'CA' ? state.caCriteria : state.feCriteria;
+    
+    if (criteria.length === 0) {
+        alert('No criteria to submit');
+        return;
+    }
+
+    const totalWeight = criteria.reduce((sum, item) => sum + item.weight, 0);
+    if (totalWeight !== 100) {
+        alert('Total weight must equal 100%');
+        return;
+    }
+
+    try {
+        const response = await fetch('/criterion/save_criteria/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                course_id: state.courseId,
+                criteria: criteria.map(c => ({
+                    id: c.id || null,
+                    name: c.name,
+                    nature: c.nature,
+                    type: c.type,
+                    weight: c.weight
+                }))
+            })
+        });
+
+        const data = await response.json();
+        if (data.status === 'success') {
+            if (type === 'CA') {
+                state.caSubmitted = true;
+                document.getElementById('submitCABtn').disabled = true;
+            } else {
+                state.feSubmitted = true;
+                document.getElementById('submitFEBtn').disabled = true;
+            }
+            alert(`${type} criteria submitted successfully`);
+            // Refresh the criteria data
+            handleCourseChange();
+        } else {
+            throw new Error(data.message);
+        }
+    } catch (error) {
+        console.error('Error submitting criteria:', error);
+        alert('Error submitting criteria');
+    }
+}
+
+// Utility function to get CSRF token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}

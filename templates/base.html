@@ -1,0 +1,202 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EMS Portal - {% block title %}{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    {% block extra_css %}{% endblock %}
+    
+    <style>
+      .fixed-content {
+        position: fixed;
+        right: 0;
+        top: 0;
+        height: 100vh;
+        transition: all 0.3s ease;
+        overflow-y: auto;
+      }
+
+      #sidebar {
+        transition: transform 0.3s ease;
+      }
+
+      #sidebar button i {
+        transition: all 0.3s ease;
+        position: relative;
+      }
+    </style>
+    {% block extra_style %}{% endblock %}
+  </head>
+  <body class="bg-gray-50">
+    <div class="min-h-screen flex transition-all duration-300 ease-in-out">
+      <!-- Sidebar -->
+      <aside id="sidebar" class="w-64 bg-[#1e2532] text-white h-screen fixed left-0 top-0 transition-all duration-300 z-20">
+        <div class="p-4">
+          <div class="flex items-center space-x-3">
+            <button onclick="toggleSidebar()" class="text-white hover:text-gray-300 focus:outline-none p-1">
+              <i class="fas fa-bars text-xl"></i>
+            </button>
+            <h2 class="text-xl font-bold">EMS Portal</h2>
+          </div>
+          <p class="text-sm text-gray-400 mt-1">{{ user.groups.first.name }} Portal</p>
+        </div>
+
+        <nav class="mt-4">
+          {% block sidebar_content %}{% endblock %}
+        </nav>
+      </aside>
+
+      <!-- Main Content Area -->
+      <div id="mainContent" class="flex-1 flex flex-col fixed-content transition-all duration-300" style="margin-left: 256px; width: calc(100% - 256px)">
+        <!-- Header -->
+        <header class="bg-white shadow-sm">
+          <div class="flex items-center justify-end px-4 py-3">
+            <div class="flex items-center space-x-6">
+              <!-- Notifications -->
+              <div class="relative">
+                <button onclick="toggleNotifications()" class="text-gray-500 hover:text-gray-700 relative">
+                  <i class="fas fa-bell"></i>
+                  <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                    {{ notifications_count }}
+                  </span>
+                </button>
+
+                <!-- Notifications Dropdown -->
+                <div id="notificationsPanel" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg z-50">
+                  <div class="p-4 border-b">
+                    <h3 class="text-lg font-semibold">Notifications</h3>
+                  </div>
+                  <div class="max-h-96 overflow-y-auto">
+                    {% for notification in notifications %}
+                    <a href="{{ notification.link }}" class="block p-4 hover:bg-gray-50 border-b">
+                      <p class="text-sm font-medium text-gray-900">{{ notification.title }}</p>
+                      <p class="text-sm text-gray-500">{{ notification.message }}</p>
+                      <p class="text-xs text-gray-400 mt-1">{{ notification.created_at|timesince }} ago</p>
+                    </a>
+                    {% empty %}
+                    <p class="p-4 text-gray-500">No new notifications</p>
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Profile Menu -->
+              <div class="relative">
+                <button onclick="toggleProfile()" class="flex items-center space-x-2 text-gray-700 hover:text-gray-900">
+                  {% if user.profile.avatar %}
+                  <img src="#" alt="Profile" class="w-8 h-8 rounded-full">
+                  {% else %}
+                  <img src="#" alt="Profile" class="w-8 h-8 rounded-full">
+                  {% endif %}
+                  <span>{{ user.get_full_name }}</span>
+                  <i class="fas fa-chevron-down text-xs"></i>
+                </button>
+
+                <!-- Profile Dropdown -->
+                <div id="profilePanel" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50">
+                  <div class="p-4 border-b">
+                    <p class="text-sm font-medium text-gray-900">{{ user.get_full_name }}</p>
+                  </div>
+                  <div class="py-1">
+                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                      <i class="fas fa-user w-5"></i> My Profile
+                    </a>
+                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                      <i class="fas fa-cog w-5"></i> Settings
+                    </a>
+                    <form method="post" action="{% url 'user_auth:logout' %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                            <i class="fas fa-sign-out-alt w-5"></i> Sign out
+                        </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6 w-full">  
+          {% block content %}{% endblock %}
+        </main>
+      </div>
+    </div>
+
+    <!-- Common JavaScript -->
+    <script>
+      // All the JavaScript functions from the original template
+      function toggleSidebar() {
+        const sidebar = document.getElementById("sidebar");
+        const mainContent = document.getElementById("mainContent");
+        const toggleButton = document.querySelector("#sidebar button i");
+
+        if (sidebar.style.transform === "translateX(0px)" || sidebar.style.transform === "") {
+          sidebar.style.transform = "translateX(-256px)";
+          mainContent.style.marginLeft = "0";
+          mainContent.style.width = "100%";
+          toggleButton.style.transform = "translateX(270px)";
+          toggleButton.style.color = "#1f2937";
+        } else {
+          sidebar.style.transform = "translateX(0)";
+          mainContent.style.marginLeft = "256px";
+          mainContent.style.width = "calc(100% - 256px)";
+          toggleButton.style.transform = "none";
+          toggleButton.style.color = "white";
+        }
+      }
+
+      function toggleNotifications() {
+        const panel = document.getElementById("notificationsPanel");
+        const profilePanel = document.getElementById("profilePanel");
+        panel.classList.toggle("hidden");
+        profilePanel.classList.add("hidden");
+      }
+
+      function toggleProfile() {
+        const panel = document.getElementById("profilePanel");
+        const notificationsPanel = document.getElementById("notificationsPanel");
+        panel.classList.toggle("hidden");
+        notificationsPanel.classList.add("hidden");
+      }
+
+      document.addEventListener("click", function(event) {
+        const notificationsPanel = document.getElementById("notificationsPanel");
+        const profilePanel = document.getElementById("profilePanel");
+        if (!event.target.closest(".relative")) {
+          notificationsPanel.classList.add("hidden");
+          profilePanel.classList.add("hidden");
+        }
+      });
+
+      function initializeMobileView() {
+        const sidebar = document.getElementById("sidebar");
+        const mainContent = document.getElementById("mainContent");
+        const toggleButton = document.querySelector("#sidebar button i");
+
+        if (window.innerWidth < 1024) {
+          sidebar.style.transform = "translateX(-256px)";
+          mainContent.style.marginLeft = "0";
+          mainContent.style.width = "100%";
+          toggleButton.style.transform = "translateX(270px)";
+          toggleButton.style.color = "#1f2937";
+        } else {
+          sidebar.style.transform = "translateX(0)";
+          mainContent.style.marginLeft = "256px";
+          mainContent.style.width = "calc(100% - 256px)";
+          toggleButton.style.transform = "none";
+          toggleButton.style.color = "white";
+        }
+      }
+
+      window.addEventListener("load", initializeMobileView);
+      window.addEventListener("resize", initializeMobileView);
+    </script>
+    {% block extra_js %}{% endblock %}
+  </body>
+</html>

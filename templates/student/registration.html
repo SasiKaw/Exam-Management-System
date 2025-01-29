@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration - EMS Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .custom-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            select {
+                scrollbar-width: thin;
+                scrollbar-color: #CBD5E0 #EDF2F7;
+            }
+            
+            select::-webkit-scrollbar {
+                width: 8px;
+            }
+            
+            select::-webkit-scrollbar-track {
+                background: #EDF2F7;
+                border-radius: 4px;
+            }
+            
+            select::-webkit-scrollbar-thumb {
+                background-color: #CBD5E0;
+                border-radius: 4px;
+                border: 2px solid #EDF2F7;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center py-12">
+    <div class="w-full max-w-md">
+        <!-- Registration Card -->
+        <div class="bg-white rounded-lg custom-shadow p-8">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <h1 class="text-2xl font-bold text-gray-800 mb-2">Create Account</h1>
+                <p class="text-gray-600">Register as a student</p>
+            </div>
+
+            <!-- Registration Form -->
+            <form method="POST" class="space-y-6">
+                {% csrf_token %}
+
+                {% if messages %}
+                    <div class="space-y-4 mb-6" id="message-container">
+                        {% for message in messages %}
+                            <div class="border px-4 py-3 rounded-md relative {% if message.tags == 'error' %}bg-red-50 border-red-400 text-red-700{% elif message.tags == 'success' %}bg-green-50 border-green-400 text-green-700{% elif message.tags == 'warning' %}bg-yellow-50 border-yellow-400 text-yellow-700{% else %}bg-blue-50 border-blue-400 text-blue-700{% endif %} message-alert">
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 mr-3">
+                                            {% if message.tags == 'error' %}
+                                                <i class="fas fa-exclamation-circle"></i>
+                                            {% elif message.tags == 'success' %}
+                                                <i class="fas fa-check-circle"></i>
+                                            {% elif message.tags == 'warning' %}
+                                                <i class="fas fa-exclamation-triangle"></i>
+                                            {% else %}
+                                                <i class="fas fa-info-circle"></i>
+                                            {% endif %}
+                                        </div>
+                                        <p class="text-sm">{{ message }}</p>
+                                    </div>
+                                    <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-gray-400 hover:text-gray-600 transition-colors duration-200">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <!-- Username Field -->
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-user text-gray-400"></i>
+                        </div>
+                        <input type="text" id="username" name="username" required
+                            class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                            placeholder="Choose a username">
+                    </div>
+                </div>
+
+                <!-- Full Name Field -->
+                <div>
+                    <label for="fullname" class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-id-card text-gray-400"></i>
+                        </div>
+                        <input type="text" id="name" name="name" required
+                            class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                            placeholder="Enter your full name">
+                    </div>
+                </div>
+
+                <!-- Index Number Field -->
+                <div>
+                    <label for="index_number" class="block text-sm font-medium text-gray-700 mb-2">Index Number</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-hashtag text-gray-400"></i>
+                        </div>
+                        <input type="text" id="index_no" name="index_no" required
+                            class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                            placeholder="Enter your index number">
+                    </div>
+                </div>
+                <!-- Batch Selection Field -->
+                <div>
+                    <label for="batch" class="block text-sm font-medium text-gray-700 mb-2">Select Batch</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-users text-gray-400"></i>
+                        </div>
+                        <select id="id" name="batch" required
+                            class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm appearance-none"
+                            style="max-height: 200px; overflow-y: auto;">
+                            <option value="" disabled selected>Select your batch</option>
+                            {% for batch in batches %}
+                                <option value="{{ batch.id }}">{{ batch.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                            <i class="fas fa-chevron-down text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Password Field -->
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-lock text-gray-400"></i>
+                        </div>
+                        <input type="password" id="password" name="password" required
+                            class="block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                            placeholder="Create a password">
+                        <button type="button" onclick="togglePassword('password')"
+                            class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                            <i id="passwordToggleIcon" class="fas fa-eye text-gray-400 hover:text-gray-600"></i>
+                        </button>
+                    </div>
+                    <p class="mt-1 text-xs text-gray-500">Password must be at least 8 characters long</p>
+                </div>
+
+                <!-- Confirm Password Field -->
+                <div>
+                    <label for="confirm_password" class="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-lock text-gray-400"></i>
+                        </div>
+                        <input type="password" id="confirm_password" name="confirm_password" required
+                            class="block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                            placeholder="Confirm your password">
+                        <button type="button" onclick="togglePassword('confirm_password')"
+                            class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                            <i id="confirmPasswordToggleIcon" class="fas fa-eye text-gray-400 hover:text-gray-600"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" id="submitBtn"
+                    class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#1e2532] hover:bg-[#2a3241] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Create Account
+                </button>
+            </form>
+
+            <!-- Login Link -->
+            <div class="mt-6 text-center text-sm">
+                <span class="text-gray-600">Already have an account?</span>
+                <a href="{% url 'user_auth:login' %}" class="font-medium text-blue-600 hover:text-blue-500 ml-1">
+                    Sign in here
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function togglePassword(inputId) {
+            const passwordInput = document.getElementById(inputId);
+            const toggleIcon = passwordInput.nextElementSibling.children[0];
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
+
+        // Form validation
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
+
+            if (password.length < 8) {
+                alert('Password must be at least 8 characters long');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                alert('Passwords do not match');
+                return;
+            }
+
+            // Show loading state
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Creating Account...
+            `;
+
+            this.submit();
+        });
+    </script>
+</body>
+</html>

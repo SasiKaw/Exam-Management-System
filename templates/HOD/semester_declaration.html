@@ -1,0 +1,467 @@
+{% extends 'base.html' %}
+
+{% block title %}Semester Declaration{% endblock %}
+
+{% block sidebar_content %}
+<div class="px-4 py-2">
+  <h3 class="text-xs uppercase text-gray-500">Main Menu</h3>
+</div>
+
+<a href="{% url 'user_auth:dashboard' %}" class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white">
+  <i class="fas fa-home w-6"></i>
+  <span>Dashboard</span>
+</a>
+
+<!-- HOD Navigation Items -->
+<a href="{% url 'HOD:semester_declaration' %}" class="flex items-center px-4 py-3 text-white bg-gray-700 hover:bg-gray-600">
+  <i class="fas fa-calendar-alt w-6"></i>
+  <span>Declare Semester</span>
+</a>
+
+<a href="#" class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white">
+  <i class="fas fa-book w-6"></i>
+  <span>Declare Subject</span>
+</a>
+
+<div class="px-4 py-2 mt-4">
+  <h3 class="text-xs uppercase text-gray-500">Course Management</h3>
+</div>
+
+<a href="{% url 'HOD:course_management' %}" class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white">
+  <i class="fas fa-tasks w-6"></i>
+  <span>Course Management</span>
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-lg shadow-sm p-6">
+    <div class="header mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">Semester Declaration</h1>
+        <p class="text-gray-600">Manage academic semesters</p>
+    </div>
+
+    <div id="alertBox" class="alert"></div>
+
+    <!-- Semester Declaration Section -->
+    <div class="section">
+        <h2 class="section-title">Declare New Semester</h2>
+        <form method="POST" action="{% url 'HOD:semester_declaration' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="startDate">Start Date:</label>
+                <input type="date" id="startDate" name="startDate" required onchange="calculateEndDate()">
+                <div class="date-info">Please select the semester start date</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="endDate">End Date (15 weeks):</label>
+                <input type="date" id="endDate" name="endDate" required>
+                <div class="date-info">End date will be automatically calculated</div>
+            </div>
+
+            <div class="section-actions">
+                <button type="submit" class="btn btn-primary">Declare Semester</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Current Semester Section -->
+    <div class="section">
+        <div class="section-title-with-badge">
+            <h2 class="section-title">Declared Semesters</h2>
+            {% if all_semesters %}
+                <span class="recent-badge">{{ all_semesters.count }} Semesters</span>
+            {% endif %}
+        </div>
+        <table class="semester-table">
+            <thead>
+                <tr>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Duration</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if all_semesters %}
+                    {% for semester in all_semesters %}
+                        <tr {% if forloop.first %}class="most-recent"{% endif %}>
+                            <td>{{ semester.start_date|date:"M d, Y" }}</td>
+                            <td>{{ semester.end_date|date:"M d, Y" }}</td>
+                            <td>15 weeks</td>
+                            <td>
+                                <span class="semester-status {% if forloop.first %}status-active{% else %}status-completed{% endif %}">
+                                    {% if forloop.first %}Active{% else %}Completed{% endif %}
+                                </span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="4" class="no-data">No semesters declared</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+    }
+
+    body {
+        background: #f5f5f5;
+        padding: 20px;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .header {
+        text-align: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #e9ecef;
+    }
+
+    .header h1 {
+        color: #1a5f7a;
+        margin-bottom: 10px;
+        font-size: 2.5em;
+    }
+
+    .header p {
+        color: #666;
+        font-size: 1.2em;
+    }
+
+    .section {
+        margin-bottom: 30px;
+        padding: 25px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border: 1px solid #dee2e6;
+    }
+
+    .section-title {
+        font-size: 1.5em;
+        color: #1a5f7a;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+        color: #495057;
+    }
+
+    input[type="date"] {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 16px;
+        background-color: white;
+    }
+
+    input[type="date"]:focus {
+        outline: none;
+        border-color: #1a5f7a;
+        box-shadow: 0 0 0 2px rgba(26, 95, 122, 0.2);
+    }
+
+    .btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: all 0.3s;
+    }
+
+    .btn-primary {
+        background: #1a5f7a;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #134a60;
+    }
+
+    .section-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .alert {
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 4px;
+        display: none;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .alert-success {
+        background: #d1e7dd;
+        color: #0f5132;
+        border: 1px solid #badbcc;
+    }
+
+    .alert-error {
+        background: #f8d7da;
+        color: #842029;
+        border: 1px solid #f5c2c7;
+    }
+
+    .date-info {
+        margin-top: 10px;
+        padding: 10px;
+        background: #e9ecef;
+        border-radius: 4px;
+        color: #495057;
+        font-size: 0.9em;
+    }
+
+    .semester-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        background: white;
+    }
+
+    .semester-table th,
+    .semester-table td {
+        padding: 12px;
+        border: 1px solid #dee2e6;
+        text-align: left;
+    }
+
+    .semester-table th {
+        background: #f8f9fa;
+        font-weight: bold;
+        color: #1a5f7a;
+    }
+
+    .semester-status {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.9em;
+        font-weight: bold;
+    }
+
+    .status-active {
+        background: #d1e7dd;
+        color: #0f5132;
+    }
+
+    .no-data {
+        text-align: center;
+        padding: 20px;
+        color: #6c757d;
+        font-style: italic;
+    }
+
+    .section-title-with-badge {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .recent-badge {
+        background: #1a5f7a;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 0.8em;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            padding: 15px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Store declared semesters (simulating database)
+    let declaredSemesters = [];
+
+    // Initialize date input min value to today
+    document.addEventListener('DOMContentLoaded', function() {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('startDate').min = today;
+    });
+
+    // Automatically calculate end date when start date is selected
+    function calculateEndDate() {
+        const startDate = document.getElementById('startDate').value;
+        if (!startDate) return;
+
+        const start = new Date(startDate);
+        const today = new Date();
+        
+        // Reset time part for accurate date comparison
+        today.setHours(0, 0, 0, 0);
+        const startDateOnly = new Date(start.setHours(0, 0, 0, 0));
+
+        // Validate start date is not in the past
+        if (startDateOnly < today) {
+            showAlert('Start date cannot be in the past', 'error');
+            document.getElementById('startDate').value = '';
+            document.getElementById('endDate').value = '';
+            return;
+        }
+
+        // Calculate end date (15 weeks from start)
+        const end = new Date(start);
+        end.setDate(end.getDate() + (15 * 7)); // 15 weeks
+        
+        document.getElementById('endDate').value = formatDate(end);
+    }
+
+    // Handle semester declaration
+    function declareSemester(event) {
+        event.preventDefault();
+
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+
+        if (!startDate || !endDate) {
+            showAlert('Please set the semester start date', 'error');
+            return;
+        }
+
+        // Additional validations
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+
+        // Check for overlapping semesters
+        if (hasOverlappingSemester(start, end)) {
+            showAlert('This period overlaps with an existing semester', 'error');
+            return;
+        }
+
+        // Create semester object
+        const semester = {
+            id: Date.now(),
+            startDate: startDate,
+            endDate: endDate,
+            status: 'active'
+        };
+
+        // Save semester (in real implementation, this would be a database call)
+        declaredSemesters.push(semester);
+
+        // Update the semester table
+        updateSemesterTable();
+
+        // Show success message
+        showAlert('Semester declared successfully!', 'success');
+
+        // Reset form
+        setTimeout(() => {
+            document.getElementById('semesterForm').reset();
+        }, 2000);
+
+        // Log the declared semester (for demonstration)
+        console.log('Declared Semester:', semester);
+    }
+
+    function updateSemesterTable() {
+        const tbody = document.getElementById('semesterTableBody');
+        
+        if (declaredSemesters.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" class="no-data">No active semester declared</td>
+                </tr>`;
+            return;
+        }
+
+        // Get the most recent semester
+        const mostRecent = declaredSemesters[declaredSemesters.length - 1];
+        
+        // Calculate duration in weeks
+        const start = new Date(mostRecent.startDate);
+        const end = new Date(mostRecent.endDate);
+        const durationInWeeks = Math.round((end - start) / (7 * 24 * 60 * 60 * 1000));
+
+        tbody.innerHTML = `
+            <tr>
+                <td>${formatDateForDisplay(mostRecent.startDate)}</td>
+                <td>${formatDateForDisplay(mostRecent.endDate)}</td>
+                <td>${durationInWeeks} weeks</td>
+                <td><span class="semester-status status-active">Active</span></td>
+            </tr>
+        `;
+    }
+
+    // Check for overlapping semesters
+    function hasOverlappingSemester(start, end) {
+        return declaredSemesters.some(semester => {
+            const semesterStart = new Date(semester.startDate);
+            const semesterEnd = new Date(semester.endDate);
+            return (start <= semesterEnd && end >= semesterStart);
+        });
+    }
+
+    // Format date for internal use (YYYY-MM-DD)
+    function formatDate(date) {
+        return date.toISOString().split('T')[0];
+    }
+
+    // Format date for display
+    function formatDateForDisplay(dateString) {
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        return new Date(dateString).toLocaleDateString(undefined, options);
+    }
+
+    // Show alert messages
+    function showAlert(message, type) {
+        const alert = document.getElementById('alertBox');
+        alert.textContent = message;
+        alert.className = `alert alert-${type}`;
+        alert.style.display = 'block';
+        setTimeout(() => alert.style.display = 'none', 3000);
+    }
+    function calculateEndDate() {
+        const startDate = document.getElementById('startDate').value;
+        if (!startDate) return;
+
+        const start = new Date(startDate);
+        const end = new Date(start);
+        end.setDate(end.getDate() + (15 * 7)); // 15 weeks
+        
+        document.getElementById('endDate').value = end.toISOString().split('T')[0];
+    }
+</script>
+{% endblock %}

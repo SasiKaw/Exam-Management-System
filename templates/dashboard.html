@@ -1,0 +1,229 @@
+{% extends 'base.html' %} 
+{% block title %}Dashboard{% endblock %} 
+
+{% block sidebar_content %}
+<div class="px-4 py-2">
+  <h3 class="text-xs uppercase text-gray-500">Main Menu</h3>
+</div>
+
+<a
+  href="{% url 'user_auth:dashboard' %}"
+  class="flex items-center px-4 py-3 text-white bg-gray-700 hover:bg-gray-600"
+>
+  <i class="fas fa-home w-6"></i>
+  <span>Dashboard</span>
+</a>
+
+{% if user.groups.first.name == 'Student' %}
+<!-- Student Navigation Items -->
+<a
+  href="{% url 'student:result'%}"
+  class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white"
+>
+  <i class="fas fa-graduation-cap w-6"></i>
+  <span>Results</span>
+</a>
+
+<a
+  href="#"
+  class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white"
+>
+  <i class="fas fa-calendar w-6"></i>
+  <span>Exam Schedule</span>
+</a>
+
+<a
+  href="#"
+  class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white"
+>
+  <i class="fas fa-tasks w-6"></i>
+  <span>CA Schedule</span>
+</a>
+
+<a
+  href="#"
+  class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white"
+>
+  <i class="fas fa-exclamation-circle w-6"></i>
+  <span>Mitigation</span>
+</a>
+
+{% elif user.groups.first.name == 'Lecturer' %}
+<!-- Lecturer Navigation Items -->
+<a
+  href="#"
+  class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white"
+>
+  <i class="fas fa-book w-6"></i>
+  <span>My Courses</span>
+</a>
+
+<a
+  href="{% url 'lecturer:add_criterions'%}"
+  class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white"
+>
+  <i class="fas fa-tasks w-6"></i>
+  <span>Assessment Criteria</span>
+</a>
+
+<a
+  href="#"
+  class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white"
+>
+  <i class="fas fa-clipboard-check w-6"></i>
+  <span>Marks Entry</span>
+</a>
+
+<div class="px-4 py-2 mt-4">
+  <h3 class="text-xs uppercase text-gray-500">Academic</h3>
+</div>
+
+<a
+  href="#"
+  class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white"
+>
+  <i class="fas fa-calendar w-6"></i>
+  <span>CA Schedule</span>
+</a>
+
+<a
+  href="#"
+  class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white"
+>
+  <i class="fas fa-chart-bar w-6"></i>
+  <span>Reports</span>
+</a>
+
+{% elif user.groups.first.name == 'HOD' %}
+<!-- HOD Navigation Items -->
+<a
+  href="{% url 'HOD:semester_declaration'%}"
+  class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white"
+>
+  <i class="fas fa-calendar-alt w-6"></i>
+  <span>Declare Semester</span>
+</a>
+
+<a
+  href="#"
+  class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white"
+>
+  <i class="fas fa-book w-6"></i>
+  <span>Declare Subject</span>
+</a>
+
+<div class="px-4 py-2 mt-4">
+  <h3 class="text-xs uppercase text-gray-500">Course Management</h3>
+</div>
+
+<a
+  href="{% url 'HOD:course_management' %}"
+  class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white"
+>
+  <i class="fas fa-tasks w-6"></i>
+  <span>Course Management</span>
+</a>
+{% endif %} 
+{% endblock %} 
+
+{% block content %}
+<div class="flex flex-col w-full h-full">
+
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">
+        Welcome, {{ user.get_full_name|default:user.username }}
+    </h1>
+  </div>  
+  {% if user.groups.first.name == 'Student' %}
+      <!-- Student Dashboard Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- GPA Card -->
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <div class="flex items-center">
+                <div class="bg-blue-100 rounded-full p-3">
+                    <i class="fas fa-graduation-cap text-blue-600 text-xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Current GPA</h3>
+                    <p class="text-2xl font-bold text-blue-600">
+                        {{ current_gpa|floatformat:2 }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Current Level Card -->
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <div class="flex items-center">
+                <div class="bg-purple-100 rounded-full p-3">
+                    <i class="fas fa-layer-group text-purple-600 text-xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Current Semester</h3>
+                    <p class="text-2xl font-bold text-purple-600">
+                        {{ current_level }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Current Courses Card -->
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <div class="flex items-center">
+                <div class="bg-green-100 rounded-full p-3">
+                    <i class="fas fa-book text-green-600 text-xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Total Credits</h3>
+                    <p class="text-2xl font-bold text-green-600">
+                        {{ total_credits|default:"0" }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+        {% elif user.groups.first.name == 'HOD' %}
+      <div class="flex justify-center items-center w-full">  <!-- Added flex container -->
+        <div class="max-w-7xl w-full px-4 sm:px-6 lg:px-8">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- HOD Card 1 -->
+            <div class="w-full bg-white rounded-lg shadow-sm p-6">
+              <div class="flex flex-col items-center text-center">
+                <div class="bg-blue-100 rounded-full p-4 mb-3">
+                  <i class="fas fa-users text-blue-600 text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Total Students</h3>
+                <p class="text-3xl font-bold text-blue-600">{{ total_students|default:"0" }}</p>
+              </div>
+            </div>
+
+            <!-- HOD Card 2 -->
+            <div class="w-full bg-white rounded-lg shadow-sm p-6">
+              <div class="flex flex-col items-center text-center">
+                <div class="bg-green-100 rounded-full p-4 mb-3">
+                  <i class="fas fa-book text-green-600 text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Active Subjects</h3>
+                <p class="text-3xl font-bold text-green-600">{{ active_subjects|default:"0" }}</p>
+              </div>
+            </div>
+
+            <!-- HOD Card 3 -->
+            <div class="w-full bg-white rounded-lg shadow-sm p-6">
+              <div class="flex flex-col items-center text-center">
+                <div class="bg-purple-100 rounded-full p-4 mb-3">
+                  <i class="fas fa-calendar text-purple-600 text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Current Semester</h3>
+                <p class="text-3xl font-bold text-purple-600">
+                  {{ current_semester.start_date|date:"M Y" }}/{{ current_semester.end_date|date:"M Y" }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  {% endif %}
+{% endblock %}
+  </div>
+</div>
