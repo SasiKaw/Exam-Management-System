@@ -2,7 +2,7 @@ import json
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.db.models import Count, Q
-from .models import Programs, Batches, Courses, Subjects, Criterias
+from .models import *
 from django.db import transaction
 
 
@@ -140,35 +140,40 @@ def save_criteria(request):
         try:
             data = json.loads(request.body)
             course_id = data.get('course_id')
+            criteria_type = data.get('type')
             criteria_list = data.get('criteria')
-            
-            print(f"Received data: {data}")  # Debug log
-            
+
             with transaction.atomic():
+                # Get existing criteria IDs for this course and type
+                existing_ids = set(Criterias.objects.filter(
+                    courses_id=course_id,
+                    type=criteria_type
+                ).values_list('id', flat=True))
+                
+                # Process each criterion
                 for criterion in criteria_list:
-                    print(f"Processing criterion: {criterion}")
-                    if criterion.get('id'):
-                        try:
-                            Criterias.objects.filter(id=criterion['id']).update(
-                                nature=criterion['nature'],
-                                weights=criterion['weight']
-                            )
-                            print(f"Updated criterion {criterion['id']}")
-                        except Exception as e:
-                            print(f"Error updating criterion {criterion['id']}: {e}")
+                    if criterion.get('id') in existing_ids:
+                        # Update existing
+                        Criterias.objects.filter(id=criterion['id']).update(
+                            nature=criterion['nature'],
+                            weights=criterion['weight']
+                        )
+                        existing_ids.remove(criterion['id'])
                     else:
-                        try:
-                            new_criteria = Criterias.objects.create(
-                                courses_id=course_id,
-                                nature=criterion['nature'],
-                                type=criterion['type'],
-                                name=criterion['name'],
-                                weights=criterion['weight']
-                            )
-                            print(f"Created new criterion: {new_criteria.id}")
-                        except Exception as e:
-                            print(f"Error creating criterion: {e}")
+                        # Create new
+                        Criterias.objects.create(
+                            courses_id=course_id,
+                            nature=criterion['nature'],
+                            type=criteria_type,
+                            name=criterion['name'],
+                            weights=criterion['weight']
+                        )
+                
+                # Delete removed criteria
+                if existing_ids:
+                    Criterias.objects.filter(id__in=existing_ids).delete()
+                    
                 return JsonResponse({'status': 'success'})
         except Exception as e:
-            print(f"Error in save_criteria: {str(e)}")
+            print(f"Error saving criteria: {str(e)}")
             return JsonResponse({'status': 'error', 'message': str(e)})

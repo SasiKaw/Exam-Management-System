@@ -420,74 +420,156 @@
     });
 
     async function showGradeSummary() {
-    const courseId = document.getElementById('course').value;
-    const batchId = document.getElementById('batch').value;
-
-    try {
-        const response = await fetch(`{% url 'Results:get_grade_summary' %}?course_id=${courseId}&batch_id=${batchId}`);
-        const data = await response.json();
-
-        if (data.status === 'error') {
-            alert(data.message);
-            return;
-        }
-
-        // Proceed with rendering the grade summary if data is valid
-        const modal = document.createElement('div');
-        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
-        modal.innerHTML = `
-            <div class="bg-white p-6 rounded-lg w-3/4 max-w-4xl">
-                <h2 class="text-xl font-bold mb-4">Grade Distribution</h2>
-                <div class="grid grid-cols-2 gap-6">
-                    <div>
-                        <h3 class="font-semibold mb-2">Grade Summary</h3>
-                        <div class="space-y-2">
-                            ${Object.entries(data.grade_counts).map(([grade, count]) => `
-                                <div class="flex justify-between">
-                                    <span>${grade}</span>
-                                    <span>${count} students</span>
-                                </div>
-                            `).join('')}
+        const courseId = document.getElementById('course').value;
+        const batchId = document.getElementById('batch').value;
+    
+        try {
+            const response = await fetch(`{% url 'Results:get_grade_summary' %}?course_id=${courseId}&batch_id=${batchId}`);
+            const data = await response.json();
+    
+            if (data.status === 'error') {
+                alert(data.message);
+                return;
+            }
+    
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-white p-8 rounded-lg w-3/4 max-w-4xl shadow-xl">
+                    <!-- Header with Close Button -->
+                    <div class="flex justify-between items-center mb-6 pb-3 border-b border-gray-200">
+                        <h2 class="text-2xl font-bold text-gray-800">Grade Distribution Summary</h2>
+                        <button class="text-gray-400 hover:text-gray-600 transition-colors duration-200" 
+                                onclick="this.closest('.fixed').remove()">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <!-- Table Section -->
+                        <div class="bg-white rounded-lg shadow-sm">
+                            <div class="overflow-hidden rounded-lg border border-gray-200">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Grade</th>
+                                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Count</th>
+                                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Percentage</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        ${data.grade_stats.map(stat => `
+                                            <tr class="hover:bg-gray-50 transition-colors duration-150">
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${stat.grade}</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">${stat.count}</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                                    <div class="flex items-center">
+                                                        <span class="mr-2">${stat.percentage}%</span>
+                                                        <div class="w-24 bg-gray-200 rounded-full h-2">
+                                                            <div class="bg-blue-600 rounded-full h-2" style="width: ${stat.percentage}%"></div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        `).join('')}
+                                        <tr class="bg-gray-50 font-semibold">
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Total</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${data.total_results}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">100%</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+    
+                        <!-- Chart Section -->
+                        <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
+                            <canvas id="gradeChart" class="h-64"></canvas>
                         </div>
                     </div>
-                    <div>
-                        <canvas id="bellCurve"></canvas>
+    
+                    <!-- Footer -->
+                    <div class="mt-8 text-right">
+                        <button class="px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors duration-200"
+                                onclick="this.closest('.fixed').remove()">
+                            Close Summary
+                        </button>
                     </div>
                 </div>
-                <button onclick="this.parentElement.parentElement.remove()" 
-                    class="mt-4 px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">
-                    Close
-                </button>
-            </div>
-        `;
-        document.body.appendChild(modal);
-
-        new Chart(document.getElementById('bellCurve'), {
-            type: 'line',
-            data: {
-                labels: data.marks_distribution.x,
-                datasets: [{
-                    label: 'Grade Distribution',
-                    data: data.marks_distribution.y,
-                    borderColor: 'rgb(75, 192, 192)',
-                    tension: 0.4,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    title: {
-                        display: true,
-                        text: 'Grade Distribution Curve'
+            `;
+            document.body.appendChild(modal);
+    
+            // Create smooth line chart with enhanced styling
+            new Chart(document.getElementById('gradeChart'), {
+                type: 'line',
+                data: {
+                    labels: data.grade_stats.map(stat => stat.grade),
+                    datasets: [{
+                        label: 'Grade Distribution',
+                        data: data.grade_stats.map(stat => stat.percentage),
+                        borderColor: 'rgb(37, 99, 235)',
+                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: 'rgb(37, 99, 235)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(37, 99, 235)',
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Percentage (%)',
+                                font: {
+                                    weight: 'bold'
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Grades',
+                                font: {
+                                    weight: 'bold'
+                                }
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Grade Distribution Trend',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            },
+                            padding: 20
+                        },
+                        legend: {
+                            display: false
+                        }
                     }
                 }
-            }
-        });
-    } catch (error) {
-        console.error('Error:', error);
-        alert('An error occurred while loading the grade summary.');
-    }
+            });
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while loading the grade summary.');
+        }
     }
 
 

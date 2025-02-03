@@ -118,6 +118,7 @@ CREATE TABLE IF NOT EXISTS `criterias` (
   `Name` varchar(45) NOT NULL,
   `Weights` int NOT NULL,
   `Courses_ID` int NOT NULL,
+  `Max_mark` int NOT NULL DEFAULT 0,
   PRIMARY KEY (`ID`),
   CONSTRAINT `fk_Criterias_Courses1`
     FOREIGN KEY (`Courses_ID`)

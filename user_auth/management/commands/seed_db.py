@@ -243,13 +243,13 @@ class Command(BaseCommand):
     def create_criterias(self):
         """Create assessment criteria"""
         criteria_data = [
-            {'id': 1, 'nature': 'In class', 'type': 'CA', 'name': 'CA 1', 'weights': 40, 'courses_id': 1},
-            {'id': 2, 'nature': 'In class', 'type': 'CA', 'name': 'CA 2', 'weights': 60, 'courses_id': 1},
-            {'id': 3, 'nature': 'Essay', 'type': 'FE', 'name': 'Q 1', 'weights': 20, 'courses_id': 1},
-            {'id': 4, 'nature': 'Essay', 'type': 'FE', 'name': 'Q 2', 'weights': 20, 'courses_id': 1},
-            {'id': 5, 'nature': 'Essay', 'type': 'FE', 'name': 'Q 3', 'weights': 20, 'courses_id': 1},
-            {'id': 6, 'nature': 'Essay', 'type': 'FE', 'name': 'Q 4', 'weights': 20, 'courses_id': 1},
-            {'id': 7, 'nature': 'Essay', 'type': 'FE', 'name': 'Q 5', 'weights': 20, 'courses_id': 1},
+            {'id': 1, 'nature': 'In class', 'type': 'CA', 'name': 'CA 1', 'weights': 40, 'courses_id': 1, 'max_mark': 100},
+            {'id': 2, 'nature': 'In class', 'type': 'CA', 'name': 'CA 2', 'weights': 60, 'courses_id': 1, 'max_mark': 100},
+            {'id': 3, 'nature': 'Essay', 'type': 'FE', 'name': 'Q 1', 'weights': 20, 'courses_id': 1, 'max_mark': 100},
+            {'id': 4, 'nature': 'Essay', 'type': 'FE', 'name': 'Q 2', 'weights': 20, 'courses_id': 1, 'max_mark': 100},
+            {'id': 5, 'nature': 'Essay', 'type': 'FE', 'name': 'Q 3', 'weights': 20, 'courses_id': 1, 'max_mark': 100},
+            {'id': 6, 'nature': 'Essay', 'type': 'FE', 'name': 'Q 4', 'weights': 20, 'courses_id': 1, 'max_mark': 100},
+            {'id': 7, 'nature': 'Essay', 'type': 'FE', 'name': 'Q 5', 'weights': 20, 'courses_id': 1, 'max_mark': 100},
 
         ]
         

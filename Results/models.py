@@ -143,6 +143,7 @@ class Criterias(models.Model):
     name = models.CharField(db_column='Name', max_length=45)  # Field name made lowercase.
     weights = models.IntegerField(db_column='Weights')  # Field name made lowercase.
     courses = models.ForeignKey(Courses, models.DO_NOTHING, db_column='Courses_ID')  # Field name made lowercase.
+    max_mark = models.IntegerField(db_column='Max_mark')  # Field name made lowercase.
 
     class Meta:
         managed = False

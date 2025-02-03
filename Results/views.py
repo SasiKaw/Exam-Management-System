@@ -378,63 +378,26 @@ def get_grade_summary(request):
         students__batches_id=batch_id
     )
 
-    grade_counts = {
-        'A+': results.filter(grade='A+').count(),
-        'A': results.filter(grade='A').count(),
-        'A-': results.filter(grade='A-').count(),
-        'B+': results.filter(grade='B+').count(),
-        'B': results.filter(grade='B').count(),
-        'B-': results.filter(grade='B-').count(),
-        'C+': results.filter(grade='C+').count(),
-        'C': results.filter(grade='C').count(),
-        'C-': results.filter(grade='C-').count(),
-        'F': results.filter(grade='F').count()
-    }
-
-    # Get marks
-    marks = list(CoursesStudent.objects.filter(
-        courses_id=course_id,
-        students__batches_id=batch_id
-    ).values_list('marks', flat=True))
-
-    # Handle the case where marks are empty
-    if not marks:
-        return JsonResponse({
-            'status': 'error',
-            'message': 'No marks found for the given course and batch.'
+    # Count total results
+    total_results = results.count()
+    
+    # Calculate grade counts and percentages
+    grades = ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'F']
+    grade_stats = []
+    
+    for grade in grades:
+        count = results.filter(grade=grade).count()
+        percentage = (count / total_results * 100) if total_results > 0 else 0
+        grade_stats.append({
+            'grade': grade,
+            'count': count,
+            'percentage': round(percentage, 1)
         })
-
-    # Convert marks to float to ensure they are numeric
-    try:
-        marks = [float(mark) for mark in marks if mark is not None]
-    except ValueError:
-        return JsonResponse({
-            'status': 'error',
-            'message': 'Invalid marks data. Ensure all marks are numeric.'
-        })
-
-    # Calculate mean and std
-    mean = np.mean(marks)
-    std = np.std(marks)
-
-    # Validate mean and std
-    if not np.isfinite(mean) or not np.isfinite(std) or std == 0:
-        return JsonResponse({
-            'status': 'error',
-            'message': 'Invalid mean or standard deviation. Unable to generate grade summary.'
-        })
-
-    # Generate x and y for the bell curve
-    x = np.linspace(min(marks), max(marks), 100)
-    y = stats.norm.pdf(x, mean, std)
 
     return JsonResponse({
         'status': 'success',
-        'grade_counts': grade_counts,
-        'marks_distribution': {
-            'x': x.tolist(),
-            'y': y.tolist()
-        }
+        'grade_stats': grade_stats,
+        'total_results': total_results
     })
 
 

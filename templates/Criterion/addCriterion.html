@@ -266,6 +266,7 @@ function addCriteriaGroup(type) {
     if (!numQuestions || numQuestions <= 0) return;
 
     const currentCriteria = type === 'CA' ? state.caCriteria : state.feCriteria;
+
     const lastNumber = Math.max(...currentCriteria.map(c => {
         const match = c.name.match(/\d+/);
         return match ? parseInt(match[0]) : 0;
@@ -418,6 +419,17 @@ async function handleCourseChange() {
         state.courseId = null;
         resetCriteriaState();
     }
+
+    document.querySelectorAll('#submitCABtn, #submitFEBtn').forEach(btn => {
+    const type = btn.id.includes('CA') ? 'CA' : 'FE';
+    const currentCriteria = type === 'CA' ? state.caCriteria : state.feCriteria;
+    const hasCriteria = currentCriteria.some(c => c.id);
+    if (hasCriteria) {
+        btn.textContent = `Update ${type} Criteria`;
+        btn.classList.remove('bg-green-600', 'hover:bg-green-700');
+        btn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+    }
+});
 }
 
 
@@ -426,17 +438,11 @@ function resetCriteriaState() {
     state.feCriteria = [];
     state.caSubmitted = false;
     state.feSubmitted = false;
-    state.caCount = 0; 
-    state.feCount = 0;
-    state.lastCANumber = 0;  // Reset CA numbering
-    state.lastFENumber = 0;  // Reset FE numbering
     
     document.getElementById('caSummaryBody').innerHTML = '';
     document.getElementById('feSummaryBody').innerHTML = '';
     document.getElementById('caTotalWeight').textContent = '0';
     document.getElementById('feTotalWeight').textContent = '0';
-    document.getElementById('submitCABtn').disabled = true;
-    document.getElementById('submitFEBtn').disabled = true;
 }
 
 function switchTab(tab) {
@@ -576,6 +582,18 @@ function updateSummaryTable(type) {
 
     totalWeightSpan.textContent = totalWeight;
     updateSubmitButtonState(type.toUpperCase());
+
+    const submitBtn = document.getElementById(`submit${type.toUpperCase()}Btn`);
+    const hasExistingData = criteria.some(c => c.id);
+    if (hasExistingData) {
+        submitBtn.textContent = `Update ${type.toUpperCase()} Criteria`;
+        submitBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
+        submitBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+    } else {
+        submitBtn.textContent = `Submit ${type.toUpperCase()} Criteria`;
+        submitBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+        submitBtn.classList.add('bg-green-600', 'hover:bg-green-700');
+    }
 }
 
 
@@ -612,25 +630,32 @@ function updateSubmitButtonState(type) {
     const criteria = type === 'CA' ? state.caCriteria : state.feCriteria;
     const submitBtn = document.getElementById(`submit${type}Btn`);
     const totalWeight = criteria.reduce((sum, item) => sum + item.weight, 0);
-    
-    submitBtn.disabled = totalWeight !== 100 || (type === 'CA' ? state.caSubmitted : state.feSubmitted);
+
+    submitBtn.disabled = totalWeight !== 100;
 }
 
-async function submitCriteria(type) {
-    const criteria = type === 'CA' ? state.caCriteria : state.feCriteria;
-    
+function validateCriteria(criteria) {
     if (criteria.length === 0) {
         alert('No criteria to submit');
-        return;
+        return false;
     }
 
     const totalWeight = criteria.reduce((sum, item) => sum + item.weight, 0);
     if (totalWeight !== 100) {
         alert('Total weight must equal 100%');
-        return;
+        return false;
     }
 
+    return true;
+}
+
+async function submitCriteria(type) {
+    const criteria = type === 'CA' ? state.caCriteria : state.feCriteria;
+    
+    if (!validateCriteria(criteria)) return;
+    
     try {
+        console.log("Submitting criteria:", criteria); // Debug log
         const response = await fetch('/criterion/save_criteria/', {
             method: 'POST',
             headers: {
@@ -639,36 +664,26 @@ async function submitCriteria(type) {
             },
             body: JSON.stringify({
                 course_id: state.courseId,
-                criteria: criteria.map(c => ({
-                    id: c.id || null,
-                    name: c.name,
-                    nature: c.nature,
-                    type: c.type,
-                    weight: c.weight
-                }))
+                type: type,
+                criteria: criteria
             })
         });
-
+        
         const data = await response.json();
+        console.log("Response:", data); // Debug log
+        
         if (data.status === 'success') {
-            if (type === 'CA') {
-                state.caSubmitted = true;
-                document.getElementById('submitCABtn').disabled = true;
-            } else {
-                state.feSubmitted = true;
-                document.getElementById('submitFEBtn').disabled = true;
-            }
-            alert(`${type} criteria submitted successfully`);
-            // Refresh the criteria data
+            alert('Criteria saved successfully');
             handleCourseChange();
         } else {
             throw new Error(data.message);
         }
     } catch (error) {
-        console.error('Error submitting criteria:', error);
-        alert('Error submitting criteria');
+        console.error('Error:', error);
+        alert('Error saving criteria');
     }
 }
+
 
 // Utility function to get CSRF token
 function getCookie(name) {
