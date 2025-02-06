@@ -17,9 +17,10 @@ class AuthUser(models.Model):
         db_table = 'auth_user'
 
 class Semesters(models.Model):
-    id = models.AutoField(db_column='ID', primary_key=True)  
-    start_date = models.DateField(db_column='Start_date')  
-    end_date = models.DateField(db_column='End_date')  
+    id = models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
+    start_date = models.DateField(db_column='Start_date')  # Field name made lowercase.
+    end_date = models.DateField(db_column='End_date')  # Field name made lowercase.
+    status = models.IntegerField(db_column='Status', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
         managed = False

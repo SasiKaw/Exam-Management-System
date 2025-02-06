@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS `semesters` (
   `ID` int NOT NULL AUTO_INCREMENT,
   `Start_date` date NOT NULL,
   `End_date` date NOT NULL,
+  `Status` tinyint NULL DEFAULT 1,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB;
 
@@ -118,7 +119,7 @@ CREATE TABLE IF NOT EXISTS `criterias` (
   `Name` varchar(45) NOT NULL,
   `Weights` int NOT NULL,
   `Courses_ID` int NOT NULL,
-  `Max_mark` int NOT NULL DEFAULT 0,
+  `Max_mark` int NULL DEFAULT 0,
   PRIMARY KEY (`ID`),
   CONSTRAINT `fk_Criterias_Courses1`
     FOREIGN KEY (`Courses_ID`)

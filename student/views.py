@@ -62,28 +62,53 @@ def student_registration(request):
 
 
 def show_results(request):
-    
     context = {}
+    selected_semester = request.GET.get('semester')
     
     try:
         student = Students.objects.select_related('batches').get(auth_user_id=request.user.id)
-
-        results = Results.objects.raw("""
-            SELECT r.*, sb.name as subject_name, sb.total_credit 
-            FROM results r
-            JOIN courses c ON c.id = r.courses_id 
-            JOIN subjects sb ON sb.id = c.subjects_id 
-            WHERE r.students_id = %s                        
+        
+        # Get all semesters for dropdown
+        semesters = Semesters.objects.raw("""
+            SELECT DISTINCT s.* 
+            FROM semesters s
+            JOIN courses c ON c.semesters_id = s.id
+            JOIN results r ON r.courses_id = c.id
+            WHERE r.students_id = %s
+            ORDER BY s.start_date DESC
         """, [student.id])
         
+        # Base query
+        query = """
+            SELECT r.*, sb.name as subject_name, sb.total_credit, 
+                   s.start_date, s.end_date
+            FROM results r
+            JOIN courses c ON c.id = r.courses_id 
+            JOIN subjects sb ON sb.id = c.subjects_id
+            JOIN semesters s ON s.id = c.semesters_id
+            WHERE r.students_id = %s
+        """
+        params = [student.id]
+        
+        # Add semester filter if selected
+        if selected_semester:
+            query += " AND s.id = %s"
+            params.append(selected_semester)
+            
+        query += " ORDER BY s.start_date DESC, sb.name"
+        
+        results = Results.objects.raw(query, params)
+        
         context.update({
-            'results': results,  
+            'results': results,
+            'semesters': semesters,
+            'selected_semester': selected_semester
         })
         
     except Students.DoesNotExist:
         messages.error(request, "Student record not found.")
     except Exception as e:
-        print(f"Error fetching dashboard data: {e}")
-        messages.error(request, "Error loading dashboard data.")
+        print(f"Error fetching results data: {e}")
+        messages.error(request, "Error loading results data.")
     
     return render(request, 'student/results.html', context)

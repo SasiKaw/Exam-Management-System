@@ -62,7 +62,9 @@ def get_batches(request):
             courses__semesters_id=semester_id
         ).values('batches_id')
     )
+    
     data = list(batches.values("id", "name", "current_level"))
+    print(data)
     return JsonResponse({"batches": data})
 
 

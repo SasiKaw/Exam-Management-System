@@ -168,7 +168,8 @@ class Command(BaseCommand):
         Semesters.objects.create(
             id=1,
             start_date='2025-03-01',
-            end_date='2025-06-14'
+            end_date='2025-06-14',
+            status= 1,
         )
 
     def create_subjects(self):
@@ -184,7 +185,9 @@ class Command(BaseCommand):
             {'id': 8, 'name': 'Physics', 'code': 'P001', 'total_credit': 3, 'theory_credit': 1, 'practical_credit': 2, 'level': 4, 'programs_id': 1, 'ca': 40, 'fe': 60},
             {'id': 9, 'name': 'Web Programming', 'code': 'WP001', 'total_credit': 3, 'theory_credit': 1, 'practical_credit': 2, 'level': 4, 'programs_id': 1, 'ca': 50, 'fe': 50},
             {'id': 10, 'name': 'IoT', 'code': 'IOT001', 'total_credit': 3, 'theory_credit': 1, 'practical_credit': 2, 'level': 3, 'programs_id': 2, 'ca': 40, 'fe': 60},
-            {'id': 11, 'name': 'Cyber Security', 'code': 'CYS0001', 'total_credit': 3, 'theory_credit': 1, 'practical_credit': 2, 'level': 3, 'programs_id': 2, 'ca': 30, 'fe': 70}
+            {'id': 11, 'name': 'Cyber Security', 'code': 'CYS0001', 'total_credit': 3, 'theory_credit': 1, 'practical_credit': 2, 'level': 3, 'programs_id': 2, 'ca': 30, 'fe': 70},
+            {'id': 12, 'name': 'Advance Database', 'code': 'ADB01234', 'total_credit': 3, 'theory_credit': 1, 'practical_credit': 2, 'level': 5, 'programs_id': 1, 'ca': 30, 'fe': 70},
+            {'id': 13, 'name': 'Statistics 1', 'code': 'STAT1345', 'total_credit': 3, 'theory_credit': 1, 'practical_credit': 2, 'level': 3, 'programs_id': 1, 'ca': 30, 'fe': 70}
         ]
         
         for subj_data in subjects_data:

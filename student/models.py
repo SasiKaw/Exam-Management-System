@@ -1,5 +1,12 @@
+# This is an auto-generated Django model module.
+# You'll have to do the following manually to clean this up:
+#   * Rearrange models' order
+#   * Make sure each model has one field with primary_key=True
+#   * Make sure each ForeignKey and OneToOneField has `on_delete` set to the desired behavior
+#   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
+# Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
-from django.contrib.auth.models import User # Use AuthUser instead of User
+
 
 class AuthGroup(models.Model):
     name = models.CharField(unique=True, max_length=150)
@@ -96,6 +103,7 @@ class CoursesBatches(models.Model):
     id = models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
     courses = models.ForeignKey(Courses, models.DO_NOTHING, db_column='Courses_ID')  # Field name made lowercase.
     batches = models.ForeignKey(Batches, models.DO_NOTHING, db_column='Batches_ID')  # Field name made lowercase.
+    status = models.IntegerField()
 
     class Meta:
         managed = False
@@ -113,10 +121,11 @@ class CoursesLecturer(models.Model):
 
 
 class CoursesStudent(models.Model):
-    enroll_id = models.IntegerField(db_column='Enroll_Id', primary_key=True)  # Field name made lowercase.
+    enroll_id = models.AutoField(db_column='Enroll_Id', primary_key=True)  # Field name made lowercase.
     marks = models.DecimalField(db_column='Marks', max_digits=10, decimal_places=0)  # Field name made lowercase.
     students = models.ForeignKey('Students', models.DO_NOTHING, db_column='Students_ID')  # Field name made lowercase.
     courses = models.ForeignKey(Courses, models.DO_NOTHING, db_column='Courses_ID')  # Field name made lowercase.
+    status = models.IntegerField(db_column='Status', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -187,6 +196,7 @@ class Lecturers(models.Model):
     name = models.CharField(db_column='Name', max_length=100)  # Field name made lowercase.
     phone_number = models.CharField(db_column='Phone_number', max_length=12)  # Field name made lowercase.
     email = models.CharField(db_column='Email', max_length=100)  # Field name made lowercase.
+    auth_user = models.ForeignKey(AuthUser, models.DO_NOTHING)
 
     class Meta:
         managed = False
@@ -219,7 +229,8 @@ class RepeatEnrollments(models.Model):
 
 class Results(models.Model):
     id = models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
-    grade = models.CharField(db_column='Grade', max_length=20)  # Field name made lowercase.
+    grade = models.CharField(db_column='Grade', max_length=20, blank=True, null=True)  # Field name made lowercase.
+    s_grade = models.CharField(db_column='S_grade', max_length=45, blank=True, null=True)  # Field name made lowercase.
     courses = models.ForeignKey(Courses, models.DO_NOTHING, db_column='Courses_ID')  # Field name made lowercase.
     students = models.ForeignKey('Students', models.DO_NOTHING, db_column='Students_ID')  # Field name made lowercase.
     parent_id = models.IntegerField(db_column='Parent_ID', blank=True, null=True)  # Field name made lowercase.
@@ -233,17 +244,17 @@ class Semesters(models.Model):
     id = models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
     start_date = models.DateField(db_column='Start_date')  # Field name made lowercase.
     end_date = models.DateField(db_column='End_date')  # Field name made lowercase.
+    status = models.IntegerField(db_column='Status', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
         managed = False
         db_table = 'semesters'
 
-
 class Students(models.Model):
     id = models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
     index_no = models.CharField(db_column='Index_No', max_length=45, blank=True, null=True)  # Field name made lowercase.
     name = models.CharField(db_column='Name', max_length=100)  # Field name made lowercase.
-    auth_user = models.ForeignKey(User, models.DO_NOTHING)
+    auth_user = models.ForeignKey(AuthUser, models.DO_NOTHING)
     batches = models.ForeignKey(Batches, models.DO_NOTHING, db_column='batches_ID')  # Field name made lowercase.
 
     class Meta:
@@ -271,6 +282,8 @@ class Subjects(models.Model):
     practical_credit = models.IntegerField(db_column='Practical_credit', blank=True, null=True)  # Field name made lowercase.
     level = models.IntegerField(db_column='Level')  # Field name made lowercase.
     programs = models.ForeignKey(Programs, models.DO_NOTHING, db_column='Programs_ID')  # Field name made lowercase.
+    ca = models.IntegerField(db_column='CA')  # Field name made lowercase.
+    fe = models.IntegerField(db_column='FE')  # Field name made lowercase.
 
     class Meta:
         managed = False

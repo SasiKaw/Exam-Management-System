@@ -248,7 +248,9 @@ class Semesters(models.Model):
     id = models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
     start_date = models.DateField(db_column='Start_date')  # Field name made lowercase.
     end_date = models.DateField(db_column='End_date')  # Field name made lowercase.
-    
+    status = models.IntegerField(db_column='Status', blank=True, null=True)  # Field name made lowercase.
+
+
     def __str__(self):
         return str(self.start_date) + " to " + str(self.end_date)
 
