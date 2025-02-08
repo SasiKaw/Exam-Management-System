@@ -317,36 +317,76 @@
 
     // Initialize date input min value to today
     document.addEventListener('DOMContentLoaded', function() {
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('startDate').min = today;
+        const latestSemesterEndDate = "{{ all_semesters.0.end_date|date:'Y-m-d' }}";
+        const startDateInput = document.getElementById("startDate");
+        const endDateInput = document.getElementById("endDate");
+    
+        // Set start date minimum to today
+        const today = new Date().toISOString().split("T")[0];
+        startDateInput.min = today;
+    
+        // Ensure new semester starts after the latest semester's end date
+        if (latestSemesterEndDate) {
+            let nextValidStartDate = new Date(new Date(latestSemesterEndDate).getTime() + 86400000); // +1 day
+            startDateInput.min = nextValidStartDate.toISOString().split("T")[0];
+        }
+    
+        // Auto-calculate end date (15 weeks from start)
+        startDateInput.addEventListener("change", function () {
+            calculateEndDate();
+        });
+    
+        function calculateEndDate() {
+            const startDate = startDateInput.value;
+            if (!startDate) return;
+    
+            const start = new Date(startDate);
+            const today = new Date();
+            
+            // Reset time part for accurate date comparison
+            today.setHours(0, 0, 0, 0);
+            const startDateOnly = new Date(start.setHours(0, 0, 0, 0));
+    
+            // Prevent selecting a start date in the past
+            if (startDateOnly < today) {
+                showAlert('Start date cannot be in the past', 'error');
+                startDateInput.value = '';
+                endDateInput.value = '';
+                return;
+            }
+    
+            // Ensure start date is after the last semester's end date
+            if (latestSemesterEndDate) {
+                let lastSemesterEnd = new Date(latestSemesterEndDate);
+                if (startDateOnly <= lastSemesterEnd) {
+                    showAlert('Start date must be after the last semester\'s end date', 'error');
+                    startDateInput.value = '';
+                    endDateInput.value = '';
+                    return;
+                }
+            }
+    
+            // Calculate end date (15 weeks from start)
+            const end = new Date(start);
+            end.setDate(end.getDate() + (15 * 7)); // 15 weeks
+            
+            endDateInput.value = end.toISOString().split("T")[0];
+        }
+    
+        // Prevent form submission if invalid
+        document.querySelector("form").addEventListener("submit", function (e) {
+            if (!startDateInput.value || !endDateInput.value) {
+                e.preventDefault();
+                showAlert("Please select a valid start and end date.", "error");
+            }
+        });
+
+        function showAlert(message, type) {
+            alert(message); 
+        }
     });
 
-    // Automatically calculate end date when start date is selected
-    function calculateEndDate() {
-        const startDate = document.getElementById('startDate').value;
-        if (!startDate) return;
-
-        const start = new Date(startDate);
-        const today = new Date();
-        
-        // Reset time part for accurate date comparison
-        today.setHours(0, 0, 0, 0);
-        const startDateOnly = new Date(start.setHours(0, 0, 0, 0));
-
-        // Validate start date is not in the past
-        if (startDateOnly < today) {
-            showAlert('Start date cannot be in the past', 'error');
-            document.getElementById('startDate').value = '';
-            document.getElementById('endDate').value = '';
-            return;
-        }
-
-        // Calculate end date (15 weeks from start)
-        const end = new Date(start);
-        end.setDate(end.getDate() + (15 * 7)); // 15 weeks
-        
-        document.getElementById('endDate').value = formatDate(end);
-    }
+    
 
     // Handle semester declaration
     function declareSemester(event) {

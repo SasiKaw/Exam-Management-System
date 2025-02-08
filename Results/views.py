@@ -343,7 +343,6 @@ def save_criterion_marks(request):
                         except StudentsCriterias.DoesNotExist:
                             continue
 
-                # Calculate final mark (CA + FE out of 200, then divide by 2)
                 final_mark = fe_total + ca_total
                 
                 # Update CoursesStudent table with the final mark

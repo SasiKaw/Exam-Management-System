@@ -7,6 +7,7 @@ from django.contrib.auth import logout
 from django.db.models import F
 from django.http import JsonResponse
 from django.db import transaction
+from datetime import datetime
 from .models import Semesters, Programs, Batches, Subjects, Courses, CoursesBatches, Results
 import json
 
@@ -16,14 +17,41 @@ def semester_declaration(request):
             start_date = request.POST.get("startDate")
             end_date = request.POST.get("endDate")
 
-            # Create new semester
-            semester = Semesters.objects.create(
-                start_date=start_date, end_date=end_date
-            )
+            # Convert string dates to Python date objects
+            start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
+            end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
 
-            active_batches = Batches.objects.filter(is_active=True)
-            active_batches.update(current_level=F("current_level") + 1)
+            # Fetch the most recent semester
+            latest_semester = Semesters.objects.order_by("-end_date").first()
 
+            #Validation: New semester should start after the latest semester ends
+            if latest_semester and start_date <= latest_semester.end_date:
+                messages.error(request, "New semester must start after the most recent semester's end date.")
+                return redirect("HOD:semester_declaration")
+
+            # Validation: Check if new semester overlaps with existing ones
+            overlapping_semester = Semesters.objects.filter(start_date__lte=end_date, end_date__gte=start_date).exists()
+
+            if overlapping_semester:
+                messages.error(request, "The selected semester period overlaps with an existing semester.")
+                return redirect("HOD:semester_declaration")
+
+            # Transaction: Ensure data consistency
+            with transaction.atomic():
+                # Deactivate batches that reached level 8** (Graduated)
+                Batches.objects.filter(is_active=True, current_level=8).update(current_level=-1, is_active=False)
+
+                # Increment current level for active batches (<8)
+                Batches.objects.filter(is_active=True, current_level__lt=8).update(current_level=F("current_level") + 1)
+
+                # Mark the previous semester as completed
+                Semesters.objects.filter(status=0).update(status=1)
+
+                # Create new active semester
+                semester = Semesters.objects.create(
+                    start_date=start_date, end_date=end_date,status=0,
+                )
+        
             messages.success(request, "Semester declared successfully!")
             return redirect("HOD:semester_declaration")
 
@@ -33,8 +61,12 @@ def semester_declaration(request):
     # Get the most recent semester for display
     all_semesters = Semesters.objects.all().order_by("-start_date")
 
+    context = {
+        "all_semesters": all_semesters
+    }
+
     return render(
-        request, "HOD/semester_declaration.html", {"all_semesters": all_semesters}
+        request, "HOD/semester_declaration.html", context
     )
 
 
@@ -43,11 +75,11 @@ def course_management(request):
     semesters = Semesters.objects.order_by('-start_date').first()
     programs = Programs.objects.all()
     
-    
     context = {
         "semesters": semesters,
         "programs": programs,
     }
+
     return render(request, "HOD/course_management.html", context)
 
 
