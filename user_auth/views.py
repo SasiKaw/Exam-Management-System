@@ -27,7 +27,7 @@ def login_view(request):
                 messages.warning(request, "Your account is pending activation.")
                 return render(request, "login.html", {'username': username})
         else:
-            messages.error(request, "Invalid username or password.")
+            messages.error(request, "Invalid username or password.", extra_tags="login_only")
             return render(request, "login.html", {'username': username})
 
     return render(request, "login.html")

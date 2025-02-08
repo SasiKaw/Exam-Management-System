@@ -17,6 +17,11 @@ def semester_declaration(request):
             start_date = request.POST.get("startDate")
             end_date = request.POST.get("endDate")
 
+            # Validate if semester start date is valid
+            if start_date >= end_date:
+                messages.error(request, "Semester start date must be before the end date.")
+                return redirect("HOD:semester_declaration")
+
             # Convert string dates to Python date objects
             start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
             end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
@@ -26,7 +31,7 @@ def semester_declaration(request):
 
             #Validation: New semester should start after the latest semester ends
             if latest_semester and start_date <= latest_semester.end_date:
-                messages.error(request, "New semester must start after the most recent semester's end date.")
+                messages.error(request, "New semester must start after the last semester's end date.")
                 return redirect("HOD:semester_declaration")
 
             # Validation: Check if new semester overlaps with existing ones
