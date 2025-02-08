@@ -87,7 +87,14 @@ class Batches(models.Model):
     class Meta:
         managed = False
         db_table = 'batches'
+class CaSechedule(models.Model):
+    id = models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
+    start_date = models.DateField(db_column='Start_date')  # Field name made lowercase.
+    criterias = models.ForeignKey('Criterias', models.DO_NOTHING, db_column='criterias_ID')  # Field name made lowercase.
 
+    class Meta:
+        managed = False
+        db_table = 'ca_sechedule'
 
 class Courses(models.Model):
     id = models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.

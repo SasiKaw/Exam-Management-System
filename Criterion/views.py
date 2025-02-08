@@ -71,7 +71,7 @@ def get_courses(request):
             if not Batches.objects.filter(id=batch_id).exists():
                 return JsonResponse({'error': f'Batch with ID {batch_id} not found'}, status=404)
                 
-            courses = base_query.filter(coursesbatches__batches_id=batch_id)
+            courses = base_query.filter(coursesbatches__batches_id=batch_id, coursesbatches__status=0)
 
         course_list = courses.values(
             'id',
@@ -177,3 +177,62 @@ def save_criteria(request):
         except Exception as e:
             print(f"Error saving criteria: {str(e)}")
             return JsonResponse({'status': 'error', 'message': str(e)})
+
+
+def ca_schedule_view(request):
+    programs = Programs.objects.all().order_by('name')
+    return render(request, 'criterion/ca_schedule.html', {'programs': programs})
+
+def get_ca_criteria(request):
+    try:
+        course_id = request.GET.get('course_id')
+        criteria = Criterias.objects.filter(
+            courses_id=course_id,
+            type='CA'  # Only get CA criteria
+        ).values('id', 'name', 'nature')
+        return JsonResponse({'criteria': list(criteria)})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+def save_ca_schedule(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            criteria_id = data.get('criteria_id')
+            start_date = data.get('start_date')
+            
+            schedule = CaSechedule.objects.create(
+                criterias_id=criteria_id,
+                start_date=start_date
+            )
+            
+            return JsonResponse({'status': 'success', 'id': schedule.id})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+def get_ca_events(request):
+    try:
+        course_id = request.GET.get('course_id')
+        events = CaSechedule.objects.select_related(
+            'criterias', 
+            'criterias__courses', 
+            'criterias__courses__subjects'
+        ).filter(
+            criterias__courses_id=course_id
+        ).values(
+            'id',
+            'start_date',
+            'criterias__name',
+            'criterias__courses__subjects__name'
+        )
+        
+        calendar_events = [{
+            'id': event['id'],
+            'title': f"{event['criterias__courses__subjects__name']} - {event['criterias__name']}",
+            'start': event['start_date'].isoformat(),
+            'allDay': True
+        } for event in events]
+        
+        return JsonResponse({'events': calendar_events})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)

@@ -96,14 +96,6 @@
             {% elif user.groups.first.name == 'Lecturer' %}
             <!-- Lecturer Navigation Items -->
             <a
-              href="#"
-              class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white"
-            >
-              <i class="fas fa-book w-6"></i>
-              <span>My Courses</span>
-            </a>
-
-            <a
               href="{% url 'Criterion:add_criterion'%}"
               class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white"
             >
@@ -124,19 +116,11 @@
             </div>
 
             <a
-              href="#"
+              href="{% url 'Criterion:ca_schedule'%}"
               class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white"
             >
               <i class="fas fa-calendar w-6"></i>
               <span>CA Schedule</span>
-            </a>
-
-            <a
-              href="#"
-              class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white"
-            >
-              <i class="fas fa-chart-bar w-6"></i>
-              <span>Reports</span>
             </a>
 
             {% elif user.groups.first.name == 'HOD' %}
@@ -148,15 +132,7 @@
               <i class="fas fa-calendar-alt w-6"></i>
               <span>Declare Semester</span>
             </a>
-
-            <a
-              href="#"
-              class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white"
-            >
-              <i class="fas fa-book w-6"></i>
-              <span>Declare Subject</span>
-            </a>
-
+            
             <div class="px-4 py-2 mt-4">
               <h3 class="text-xs uppercase text-gray-500">Course Management</h3>
             </div>

@@ -127,6 +127,19 @@ CREATE TABLE IF NOT EXISTS `criterias` (
 ) ENGINE=InnoDB;
 
 -- -----------------------------------------------------
+-- Table `ca_sechedule`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `ca_sechedule` (
+  `ID` int NOT NULL AUTO_INCREMENT,
+  `Start_date` DATE NOT NULL,
+  `criterias_ID` INT NOT NULL,
+  PRIMARY KEY (`ID`),
+  CONSTRAINT `fk_CA_Sechedule_criterias1`
+    FOREIGN KEY (`criterias_ID`)
+    REFERENCES `criterias` (`ID`)
+) ENGINE=InnoDB;
+
+-- -----------------------------------------------------
 -- Table `students_criterias`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `students_criterias` (
