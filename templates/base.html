@@ -123,6 +123,25 @@
 
         <!-- Main Content -->
         <main class="flex-1 p-6 w-full">  
+          {% if messages %}
+            <div class="space-y-4 mb-6" id="message-container">
+              {% for message in messages %}
+                <div class="border px-4 py-3 rounded-md relative 
+                  {% if message.tags == 'error' %}bg-red-50 border-red-400 text-red-700{% 
+                  elif message.tags == 'success' %}bg-green-50 border-green-400 text-green-700{% 
+                  elif message.tags == 'warning' %}bg-yellow-50 border-yellow-400 text-yellow-700{% 
+                  else %}bg-blue-50 border-blue-400 text-blue-700{% endif %} message-alert">
+                  
+                  <div class="flex justify-between items-center">
+                    <p class="text-sm">{{ message }}</p>
+                    <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-gray-400 hover:text-gray-600">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
           {% block content %}{% endblock %}
         </main>
       </div>
@@ -196,6 +215,17 @@
 
       window.addEventListener("load", initializeMobileView);
       window.addEventListener("resize", initializeMobileView);
+
+      // Auto-dismiss messages after 5 seconds
+      document.addEventListener("DOMContentLoaded", function () {
+        setTimeout(function () {
+          let messageContainer = document.getElementById("message-container");
+          if (messageContainer) {
+            messageContainer.style.opacity = "0";
+            setTimeout(() => messageContainer.remove(), 500);
+          }
+        }, 5000); // 5 seconds
+      });
     </script>
     {% block extra_js %}{% endblock %}
   </body>
