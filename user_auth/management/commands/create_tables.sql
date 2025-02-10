@@ -136,7 +136,7 @@ CREATE TABLE IF NOT EXISTS `ca_sechedule` (
   PRIMARY KEY (`ID`),
   CONSTRAINT `fk_CA_Sechedule_criterias1`
     FOREIGN KEY (`criterias_ID`)
-    REFERENCES `criterias` (`ID`)
+    REFERENCES `criterias` (`ID`) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 -- -----------------------------------------------------

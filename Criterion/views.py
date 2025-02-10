@@ -181,7 +181,32 @@ def save_criteria(request):
 
 def ca_schedule_view(request):
     programs = Programs.objects.all().order_by('name')
-    return render(request, 'criterion/ca_schedule.html', {'programs': programs})
+    
+    # Get all CA schedules regardless of course
+    events = CaSechedule.objects.select_related(
+        'criterias', 
+        'criterias__courses', 
+        'criterias__courses__subjects'
+    ).values(
+        'id',
+        'start_date',
+        'criterias__name',
+        'criterias__courses__subjects__name'
+    )
+    
+    calendar_events = [{
+        'id': event['id'],
+        'title': f"{event['criterias__courses__subjects__name']} - {event['criterias__name']}",
+        'start': event['start_date'].isoformat(),
+        'allDay': True
+    } for event in events]
+    
+    context = {
+        'programs': programs,
+        'initial_events': json.dumps(calendar_events)
+    }
+    
+    return render(request, 'criterion/ca_schedule.html', context)
 
 def get_ca_criteria(request):
     try:
