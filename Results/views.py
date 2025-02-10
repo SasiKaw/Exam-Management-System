@@ -266,6 +266,67 @@ def get_students_marks(request):
         } for student in students]
     })
 
+
+def calculate_grade(mark):
+    """
+    Calculate grade based on LNBTT grading system
+    Args:
+        mark: Numerical mark (0-100)
+    Returns:
+        tuple: (grade, grade_point)
+    """
+    # Handle special cases first
+    if mark is None or mark == '':
+        return 'NE', 0  # Not completed the Final Examination
+
+    mark = float(mark)
+    
+    if mark == 0:
+        return 'AE', 0  # Absent for Final Examination
+
+    # Regular grade ranges
+    if 85 <= mark <= 100:
+        return 'A+'
+    elif 70 <= mark <= 84:
+        return 'A'
+    elif 65 <= mark <= 69:
+        return 'A-'
+    elif 60 <= mark <= 64:
+        return 'B+'
+    elif 55 <= mark <= 59:
+        return 'B'
+    elif 50 <= mark <= 54:
+        return 'B-'
+    elif 45 <= mark <= 49:
+        return 'C+'
+    elif 40 <= mark <= 44:
+        return 'C'
+    elif 35 <= mark <= 39:
+        return 'C-'
+    elif 30 <= mark <= 34:
+        return 'D+'
+    elif 25 <= mark <= 29:
+        return 'D'
+    elif 0 <= mark <= 24:
+        return 'E'
+    
+    return 'E', 0  # Default case
+
+def determine_attempt_status(ca_marks, fe_marks):
+    """
+    Determine special grade statuses based on CA and FE completion
+    """
+    if not ca_marks and not fe_marks:
+        return 'AA'  # Absent for both CA and Final
+    elif not ca_marks:
+        return 'AC'  # Absent for CA
+    elif not fe_marks:
+        return 'AE'  # Absent for Final Exam
+    elif not ca_marks and fe_marks and float(fe_marks) < 40:
+        return 'AF'  # Absent for CA and failed final
+    return None
+
+
 def save_criterion_marks(request):
     if request.method == 'POST':
         try:
@@ -273,20 +334,20 @@ def save_criterion_marks(request):
             student_ids = json.loads(request.POST.get('student_ids'))
             marks = json.loads(request.POST.get('marks'))
             
-            # Get criterion details
+             # Get criterion details
             criterion = Criterias.objects.get(id=criterion_id)
-            
+
             # Save marks for each student
-            for student_id, percentage_mark  in zip(student_ids, marks):
-                
+            for student_id, percentage_mark in zip(student_ids, marks):
+
                 # Save weighted mark to StudentsCriterias table
                 if 0 <= float(percentage_mark) <= 100:
                     StudentsCriterias.objects.update_or_create(
                         students_id=student_id,
                         criterias_id=criterion_id,
-                        defaults={'mark': percentage_mark}  # Save as percentage mark
+                        defaults={'mark': percentage_mark} # Save as percentage mark
                     )
-                
+
                 # Get course ID for further calculations
                 course_id = criterion.courses_id
                 course = Courses.objects.select_related('subjects').get(id=course_id)
@@ -294,19 +355,20 @@ def save_criterion_marks(request):
                 criteria = Criterias.objects.filter(courses_id=course_id)
                 ca_criteria = criteria.filter(type='CA')
                 fe_criteria = criteria.filter(type='FE')
-    
-    
+
                 # Calculate total CA and FE contributions
                 ca_contribution = course.subjects.ca  
                 fe_contribution = course.subjects.fe  
 
                 ca_total = 0
                 ca_details = []
+
+                # Calculate CA marks
                 for ca in ca_criteria:
                     try:
                         mark = StudentsCriterias.objects.get(
                             students_id=student_id,
-                            criterias_id=ca.id
+                           criterias_id=ca.id
                         )
                         raw_mark = float(mark.mark)
                         weighted_mark = (raw_mark / 100) * ca.weights
@@ -320,50 +382,75 @@ def save_criterion_marks(request):
                         })
                     except StudentsCriterias.DoesNotExist:
                         continue
-        
-                    # Calculate FE marks
-                    fe_total = 0
-                    fe_details = []
-                    for fe in fe_criteria:
-                        try:
-                            mark = StudentsCriterias.objects.get(
-                                students_id=student_id,
-                                criterias_id=fe.id
-                            )
-                            raw_mark = float(mark.mark)
-                            weighted_mark = (raw_mark / 100) * fe.weights
-                            contribution_mark = (weighted_mark / 100) * fe_contribution
-                            fe_total += contribution_mark
-                            fe_details.append({
-                                'name': fe.name,
-                                'raw_mark': raw_mark,
-                                'weighted_mark': weighted_mark,
-                                'contribution_mark': contribution_mark
-                            })
-                        except StudentsCriterias.DoesNotExist:
-                            continue
+
+                # Calculate FE marks
+                fe_total = 0
+                fe_details = []
+                for fe in fe_criteria:
+                    try:
+                        mark = StudentsCriterias.objects.get(
+                            students_id=student_id,
+                            criterias_id=fe.id
+                        )
+                        raw_mark = float(mark.mark)
+                        weighted_mark = (raw_mark / 100) * fe.weights
+                        contribution_mark = (weighted_mark / 100) * fe_contribution
+                        fe_total += contribution_mark
+                        fe_details.append({
+                            'name': fe.name,
+                            'raw_mark': raw_mark,
+                            'weighted_mark': weighted_mark,
+                            'contribution_mark': contribution_mark
+                        })
+                    except StudentsCriterias.DoesNotExist:
+                        continue
+                    
 
                 final_mark = fe_total + ca_total
-                
-                # Update CoursesStudent table with the final mark
+
+                ca_marks = StudentsCriterias.objects.filter(
+                    students_id=student_id,
+                    criterias__courses_id=course_id,
+                    criterias__type='CA'
+                ).values_list('mark', flat=True)
+
+                fe_marks = StudentsCriterias.objects.filter(
+                    students_id=student_id,
+                    criterias__courses_id=course_id,
+                    criterias__type='FE'
+                ).values_list('mark', flat=True)
+
+                # Determine special statuses first
+                attempt_status = determine_attempt_status(ca_marks, fe_marks)
+                if attempt_status:
+                    grade = attempt_status
+                else:
+                    grade = calculate_grade(final_mark)
+
+           
+                # Update course enrollment record
                 CoursesStudent.objects.update_or_create(
                     students_id=student_id,
                     courses_id=course_id,
-                    defaults={'marks': final_mark}
+                    defaults={
+                        'marks': final_mark,
+                        'status': 1 if not attempt_status else 0
+                    }
                 )
-                
-                # Update Results table with the grade
-                grade = calculate_grade(final_mark)
+
+                # Update results record
                 Results.objects.update_or_create(
                     students_id=student_id,
                     courses_id=course_id,
-                    defaults={'s_grade': grade}
+                    defaults={
+                        's_grade': grade,
+                    }
                 )
-            
+
             return JsonResponse({'status': 'success'})
             
         except Exception as e:
-            print(f"Error saving marks: {str(e)}")  # Add logging for debugging
+            print(f"Error saving marks: {str(e)}")
             return JsonResponse({'status': 'error', 'message': str(e)})
     
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
@@ -377,20 +464,44 @@ def get_grade_summary(request):
         students__batches_id=batch_id
     )
 
-    # Count total results
     total_results = results.count()
     
-    # Calculate grade counts and percentages
-    grades = ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'F']
-    grade_stats = []
+    # Include all possible grades from the grading system
+    grades = ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D', 'E', 
+              'NC', 'NE', 'AC', 'AE', 'AA', 'AF']
     
+    grade_stats = []
     for grade in grades:
         count = results.filter(grade=grade).count()
         percentage = (count / total_results * 100) if total_results > 0 else 0
+        
+        # Get description based on grade
+        description = {
+            'A+': 'Excellent',
+            'A': 'Very Good',
+            'A-': 'Good',
+            'B+': 'Good',
+            'B': 'Pass',
+            'B-': 'Pass',
+            'C+': 'Pass',
+            'C': 'Weak Pass',
+            'C-': 'Weak Pass',
+            'D+': 'Conditional Pass',
+            'D': 'Minimal Pass',
+            'E': 'Fail',
+            'NC': 'Not completed Continuous Assessments',
+            'NE': 'Not completed the Final Examination',
+            'AC': 'Absent for Continuous Assessments',
+            'AE': 'Absent for Final Examination',
+            'AA': 'Absent for both CA and Final',
+            'AF': 'Absent for CA and failed final'
+        }.get(grade, '')
+
         grade_stats.append({
             'grade': grade,
             'count': count,
-            'percentage': round(percentage, 1)
+            'percentage': round(percentage, 1),
+            'description': description
         })
 
     return JsonResponse({
@@ -401,17 +512,7 @@ def get_grade_summary(request):
 
 
 
-def calculate_grade(mark):
-    if mark >= 90: return 'A+'
-    elif mark >= 85: return 'A'
-    elif mark >= 80: return 'A-'
-    elif mark >= 75: return 'B+'
-    elif mark >= 70: return 'B'
-    elif mark >= 65: return 'B-'
-    elif mark >= 60: return 'C+'
-    elif mark >= 55: return 'C'
-    elif mark >= 50: return 'C-'
-    else: return 'F'
+
 
 
         

@@ -309,7 +309,7 @@ class Command(BaseCommand):
         """Create course enrollments with final marks for Sasindu"""
         enrollments_data = [
             # First Semester
-            {'enroll_id': 1, 'marks': 85.5, 'students_id': 2, 'courses_id': 1},  # Japanese I
+            {'enroll_id': 1, 'marks': 14.67, 'students_id': 2, 'courses_id': 1},  # Japanese I
             {'enroll_id': 2, 'marks': 88.2, 'students_id': 2, 'courses_id': 2},  # Computer Fundamentals
             {'enroll_id': 3, 'marks': 86.4, 'students_id': 2, 'courses_id': 3},  # Programming Fundamentals
             {'enroll_id': 4, 'marks': 90.0, 'students_id': 2, 'courses_id': 4},  # Technical Writing
@@ -336,83 +336,83 @@ class Command(BaseCommand):
         """Create comprehensive assessment criteria for all completed courses"""
         criteria_data = [
             # Japanese Language Level I (30:70 ratio)
-            {'id': 1, 'nature': 'Quiz', 'type': 'CA', 'name': 'Mid-Term Test', 'weights': 15, 'courses_id': 1, 'max_mark': 100},
-            {'id': 2, 'nature': 'Quiz', 'type': 'CA', 'name': 'Oral Presentation', 'weights': 15, 'courses_id': 1, 'max_mark': 100},
-            {'id': 3, 'nature': 'MCQ', 'type': 'FE', 'name': 'Final Written', 'weights': 40, 'courses_id': 1, 'max_mark': 100},
+            {'id': 1, 'nature': 'Quiz', 'type': 'CA', 'name': 'Mid-Term Test', 'weights': 60, 'courses_id': 1, 'max_mark': 100},
+            {'id': 2, 'nature': 'Quiz', 'type': 'CA', 'name': 'Oral Presentation', 'weights': 40, 'courses_id': 1, 'max_mark': 100},
+            {'id': 3, 'nature': 'MCQ', 'type': 'FE', 'name': 'Final Written', 'weights': 70, 'courses_id': 1, 'max_mark': 100},
             {'id': 4, 'nature': 'Essay', 'type': 'FE', 'name': 'Final Oral', 'weights': 30, 'courses_id': 1, 'max_mark': 100},
 
             # Computer Fundamentals (40:60 ratio)
-            {'id': 5, 'nature': 'Quiz', 'type': 'CA', 'name': 'Theory Quiz', 'weights': 20, 'courses_id': 2, 'max_mark': 100},
-            {'id': 6, 'nature': 'Quiz', 'type': 'CA', 'name': 'Lab Assessment', 'weights': 20, 'courses_id': 2, 'max_mark': 100},
+            {'id': 5, 'nature': 'Quiz', 'type': 'CA', 'name': 'Theory Quiz', 'weights': 50, 'courses_id': 2, 'max_mark': 100},
+            {'id': 6, 'nature': 'Quiz', 'type': 'CA', 'name': 'Lab Assessment', 'weights': 50, 'courses_id': 2, 'max_mark': 100},
             {'id': 7, 'nature': 'MCQ', 'type': 'FE', 'name': 'Final Theory', 'weights': 35, 'courses_id': 2, 'max_mark': 100},
-            {'id': 8, 'nature': 'Essay', 'type': 'FE', 'name': 'Final Practical', 'weights': 25, 'courses_id': 2, 'max_mark': 100},
+            {'id': 8, 'nature': 'Essay', 'type': 'FE', 'name': 'Final Practical', 'weights': 65, 'courses_id': 2, 'max_mark': 100},
 
             # Programming Fundamentals (50:50 ratio)
-            {'id': 9, 'nature': 'Quiz', 'type': 'CA', 'name': 'Programming Quiz', 'weights': 15, 'courses_id': 3, 'max_mark': 100},
-            {'id': 10, 'nature': 'Quiz', 'type': 'CA', 'name': 'Programming Assignment', 'weights': 20, 'courses_id': 3, 'max_mark': 100},
-            {'id': 11, 'nature': 'Quiz', 'type': 'CA', 'name': 'Mini Project', 'weights': 15, 'courses_id': 3, 'max_mark': 100},
-            {'id': 12, 'nature': 'MCQ', 'type': 'FE', 'name': 'Final Theory', 'weights': 25, 'courses_id': 3, 'max_mark': 100},
-            {'id': 13, 'nature': 'Essay', 'type': 'FE', 'name': 'Final Practical', 'weights': 25, 'courses_id': 3, 'max_mark': 100},
+            {'id': 9, 'nature': 'Quiz', 'type': 'CA', 'name': 'Programming Quiz', 'weights': 25, 'courses_id': 3, 'max_mark': 100},
+            {'id': 10, 'nature': 'Quiz', 'type': 'CA', 'name': 'Programming Assignment', 'weights': 50, 'courses_id': 3, 'max_mark': 100},
+            {'id': 11, 'nature': 'Quiz', 'type': 'CA', 'name': 'Mini Project', 'weights': 25, 'courses_id': 3, 'max_mark': 100},
+            {'id': 12, 'nature': 'MCQ', 'type': 'FE', 'name': 'Final Theory', 'weights': 50, 'courses_id': 3, 'max_mark': 100},
+            {'id': 13, 'nature': 'Essay', 'type': 'FE', 'name': 'Final Practical', 'weights': 50, 'courses_id': 3, 'max_mark': 100},
 
             # Technical Writing (60:40 ratio)
-            {'id': 14, 'nature': 'Quiz', 'type': 'CA', 'name': 'Writing Assignment 1', 'weights': 20, 'courses_id': 4, 'max_mark': 100},
+            {'id': 14, 'nature': 'Quiz', 'type': 'CA', 'name': 'Writing Assignment 1', 'weights': 50, 'courses_id': 4, 'max_mark': 100},
             {'id': 15, 'nature': 'Quiz', 'type': 'CA', 'name': 'Documentation Project', 'weights': 25, 'courses_id': 4, 'max_mark': 100},
-            {'id': 16, 'nature': 'Quiz', 'type': 'CA', 'name': 'Oral Presentation', 'weights': 15, 'courses_id': 4, 'max_mark': 100},
-            {'id': 17, 'nature': 'MCQ', 'type': 'FE', 'name': 'Final Assessment', 'weights': 40, 'courses_id': 4, 'max_mark': 100},
+            {'id': 16, 'nature': 'Quiz', 'type': 'CA', 'name': 'Oral Presentation', 'weights': 25, 'courses_id': 4, 'max_mark': 100},
+            {'id': 17, 'nature': 'MCQ', 'type': 'FE', 'name': 'Final Assessment', 'weights': 100, 'courses_id': 4, 'max_mark': 100},
 
             # Mathematics I for SE (30:70 ratio)
-            {'id': 18, 'nature': 'Quiz', 'type': 'CA', 'name': 'Math Quiz 1', 'weights': 15, 'courses_id': 5, 'max_mark': 100},
-            {'id': 19, 'nature': 'Quiz', 'type': 'CA', 'name': 'Problem Sets', 'weights': 15, 'courses_id': 5, 'max_mark': 100},
-            {'id': 20, 'nature': 'MCQ', 'type': 'FE', 'name': 'Final Exam', 'weights': 70, 'courses_id': 5, 'max_mark': 100},
+            {'id': 18, 'nature': 'Quiz', 'type': 'CA', 'name': 'Math Quiz 1', 'weights': 55, 'courses_id': 5, 'max_mark': 100},
+            {'id': 19, 'nature': 'Quiz', 'type': 'CA', 'name': 'Problem Sets', 'weights': 45, 'courses_id': 5, 'max_mark': 100},
+            {'id': 20, 'nature': 'MCQ', 'type': 'FE', 'name': 'Final Exam', 'weights': 100, 'courses_id': 5, 'max_mark': 100},
 
             # Japanese Language Level II (30:70 ratio)
-            {'id': 21, 'nature': 'Quiz', 'type': 'CA', 'name': 'Mid-Term Test', 'weights': 15, 'courses_id': 6, 'max_mark': 100},
-            {'id': 22, 'nature': 'Quiz', 'type': 'CA', 'name': 'Oral Presentation', 'weights': 15, 'courses_id': 6, 'max_mark': 100},
+            {'id': 21, 'nature': 'Quiz', 'type': 'CA', 'name': 'Mid-Term Test', 'weights': 45, 'courses_id': 6, 'max_mark': 100},
+            {'id': 22, 'nature': 'Quiz', 'type': 'CA', 'name': 'Oral Presentation', 'weights': 55, 'courses_id': 6, 'max_mark': 100},
             {'id': 23, 'nature': 'MCQ', 'type': 'FE', 'name': 'Final Written', 'weights': 40, 'courses_id': 6, 'max_mark': 100},
-            {'id': 24, 'nature': 'Essay', 'type': 'FE', 'name': 'Final Oral', 'weights': 30, 'courses_id': 6, 'max_mark': 100},
+            {'id': 24, 'nature': 'Essay', 'type': 'FE', 'name': 'Final Oral', 'weights': 60, 'courses_id': 6, 'max_mark': 100},
 
             # Database Systems (40:60 ratio)
-            {'id': 25, 'nature': 'Quiz', 'type': 'CA', 'name': 'Theory Quiz', 'weights': 15, 'courses_id': 7, 'max_mark': 100},
+            {'id': 25, 'nature': 'Quiz', 'type': 'CA', 'name': 'Theory Quiz', 'weights': 75, 'courses_id': 7, 'max_mark': 100},
             {'id': 26, 'nature': 'Quiz', 'type': 'CA', 'name': 'Database Project', 'weights': 25, 'courses_id': 7, 'max_mark': 100},
-            {'id': 27, 'nature': 'MCQ', 'type': 'FE', 'name': 'Final Theory', 'weights': 35, 'courses_id': 7, 'max_mark': 100},
-            {'id': 28, 'nature': 'Essay', 'type': 'FE', 'name': 'Final Practical', 'weights': 25, 'courses_id': 7, 'max_mark': 100},
+            {'id': 27, 'nature': 'MCQ', 'type': 'FE', 'name': 'Final Theory', 'weights': 55, 'courses_id': 7, 'max_mark': 100},
+            {'id': 28, 'nature': 'Essay', 'type': 'FE', 'name': 'Final Practical', 'weights': 45, 'courses_id': 7, 'max_mark': 100},
 
             # Web Programming (50:50 ratio)
-            {'id': 29, 'nature': 'Quiz', 'type': 'CA', 'name': 'Coding Quiz', 'weights': 15, 'courses_id': 8, 'max_mark': 100},
+            {'id': 29, 'nature': 'Quiz', 'type': 'CA', 'name': 'Coding Quiz', 'weights': 25, 'courses_id': 8, 'max_mark': 100},
             {'id': 30, 'nature': 'Quiz', 'type': 'CA', 'name': 'Web Project', 'weights': 25, 'courses_id': 8, 'max_mark': 100},
-            {'id': 31, 'nature': 'Quiz', 'type': 'CA', 'name': 'Implementation Task', 'weights': 10, 'courses_id': 8, 'max_mark': 100},
-            {'id': 32, 'nature': 'MCQ', 'type': 'FE', 'name': 'Final Theory', 'weights': 25, 'courses_id': 8, 'max_mark': 100},
+            {'id': 31, 'nature': 'Quiz', 'type': 'CA', 'name': 'Implementation Task', 'weights': 50, 'courses_id': 8, 'max_mark': 100},
+            {'id': 32, 'nature': 'MCQ', 'type': 'FE', 'name': 'Final Theory', 'weights': 75, 'courses_id': 8, 'max_mark': 100},
             {'id': 33, 'nature': 'Essay', 'type': 'FE', 'name': 'Final Practical', 'weights': 25, 'courses_id': 8, 'max_mark': 100},
 
             # Mathematics II for SE (30:70 ratio)
-            {'id': 34, 'nature': 'Quiz', 'type': 'CA', 'name': 'Math Quiz', 'weights': 15, 'courses_id': 9, 'max_mark': 100},
-            {'id': 35, 'nature': 'Quiz', 'type': 'CA', 'name': 'Problem Sets', 'weights': 15, 'courses_id': 9, 'max_mark': 100},
-            {'id': 36, 'nature': 'MCQ', 'type': 'FE', 'name': 'Final Exam', 'weights': 70, 'courses_id': 9, 'max_mark': 100},
+            {'id': 34, 'nature': 'Quiz', 'type': 'CA', 'name': 'Math Quiz', 'weights': 45, 'courses_id': 9, 'max_mark': 100},
+            {'id': 35, 'nature': 'Quiz', 'type': 'CA', 'name': 'Problem Sets', 'weights': 55, 'courses_id': 9, 'max_mark': 100},
+            {'id': 36, 'nature': 'MCQ', 'type': 'FE', 'name': 'Final Exam', 'weights': 100, 'courses_id': 9, 'max_mark': 100},
 
             # Data Structures and Algorithms (40:60 ratio)
-            {'id': 37, 'nature': 'Quiz', 'type': 'CA', 'name': 'Theory Quiz', 'weights': 15, 'courses_id': 10, 'max_mark': 100},
-            {'id': 38, 'nature': 'Quiz', 'type': 'CA', 'name': 'Implementation Project', 'weights': 25, 'courses_id': 10, 'max_mark': 100},
+            {'id': 37, 'nature': 'Quiz', 'type': 'CA', 'name': 'Theory Quiz', 'weights': 45, 'courses_id': 10, 'max_mark': 100},
+            {'id': 38, 'nature': 'Quiz', 'type': 'CA', 'name': 'Implementation Project', 'weights': 55, 'courses_id': 10, 'max_mark': 100},
             {'id': 39, 'nature': 'MCQ', 'type': 'FE', 'name': 'Final Theory', 'weights': 35, 'courses_id': 10, 'max_mark': 100},
-            {'id': 40, 'nature': 'Essay', 'type': 'FE', 'name': 'Final Practical', 'weights': 25, 'courses_id': 10, 'max_mark': 100},
+            {'id': 40, 'nature': 'Essay', 'type': 'FE', 'name': 'Final Practical', 'weights': 65, 'courses_id': 10, 'max_mark': 100},
 
             # Software Architecture and Design (50:50 ratio)
-            {'id': 41, 'nature': 'Quiz', 'type': 'CA', 'name': 'Architecture Quiz', 'weights': 15, 'courses_id': 11, 'max_mark': 100},
+            {'id': 41, 'nature': 'Quiz', 'type': 'CA', 'name': 'Architecture Quiz', 'weights': 25, 'courses_id': 11, 'max_mark': 100},
             {'id': 42, 'nature': 'Quiz', 'type': 'CA', 'name': 'Design Project', 'weights': 25, 'courses_id': 11, 'max_mark': 100},
-            {'id': 43, 'nature': 'Quiz', 'type': 'CA', 'name': 'Case Study', 'weights': 10, 'courses_id': 11, 'max_mark': 100},
+            {'id': 43, 'nature': 'Quiz', 'type': 'CA', 'name': 'Case Study', 'weights': 50, 'courses_id': 11, 'max_mark': 100},
             {'id': 44, 'nature': 'MCQ', 'type': 'FE', 'name': 'Final Theory', 'weights': 30, 'courses_id': 11, 'max_mark': 100},
-            {'id': 45, 'nature': 'Essay', 'type': 'FE', 'name': 'Final Design Implementation', 'weights': 20, 'courses_id': 11, 'max_mark': 100},
+            {'id': 45, 'nature': 'Essay', 'type': 'FE', 'name': 'Final Design Implementation', 'weights': 70, 'courses_id': 11, 'max_mark': 100},
 
             # Visual Application Programming (50:50 ratio)
-            {'id': 46, 'nature': 'Quiz', 'type': 'CA', 'name': 'Programming Quiz', 'weights': 15, 'courses_id': 12, 'max_mark': 100},
+            {'id': 46, 'nature': 'Quiz', 'type': 'CA', 'name': 'Programming Quiz', 'weights': 25, 'courses_id': 12, 'max_mark': 100},
             {'id': 47, 'nature': 'Quiz', 'type': 'CA', 'name': 'GUI Project', 'weights': 25, 'courses_id': 12, 'max_mark': 100},
-            {'id': 48, 'nature': 'Quiz', 'type': 'CA', 'name': 'Implementation Task', 'weights': 10, 'courses_id': 12, 'max_mark': 100},
-            {'id': 49, 'nature': 'MCQ', 'type': 'FE', 'name': 'Final Theory', 'weights': 25, 'courses_id': 12, 'max_mark': 100},
+            {'id': 48, 'nature': 'Quiz', 'type': 'CA', 'name': 'Implementation Task', 'weights': 50, 'courses_id': 12, 'max_mark': 100},
+            {'id': 49, 'nature': 'MCQ', 'type': 'FE', 'name': 'Final Theory', 'weights': 75, 'courses_id': 12, 'max_mark': 100},
             {'id': 50, 'nature': 'Essay', 'type': 'FE', 'name': 'Final Practical', 'weights': 25, 'courses_id': 12, 'max_mark': 100},
 
             # Mathematics III for SE (30:70 ratio)
-            {'id': 51, 'nature': 'Quiz', 'type': 'CA', 'name': 'Math Quiz', 'weights': 15, 'courses_id': 13, 'max_mark': 100},
-            {'id': 52, 'nature': 'Quiz', 'type': 'CA', 'name': 'Problem Sets', 'weights': 15, 'courses_id': 13, 'max_mark': 100},
-            {'id': 53, 'nature': 'MCQ', 'type': 'FE', 'name': 'Final Exam', 'weights': 70, 'courses_id': 13, 'max_mark': 100},
+            {'id': 51, 'nature': 'Quiz', 'type': 'CA', 'name': 'Math Quiz', 'weights': 55, 'courses_id': 13, 'max_mark': 100},
+            {'id': 52, 'nature': 'Quiz', 'type': 'CA', 'name': 'Problem Sets', 'weights': 45, 'courses_id': 13, 'max_mark': 100},
+            {'id': 53, 'nature': 'MCQ', 'type': 'FE', 'name': 'Final Exam', 'weights': 100, 'courses_id': 13, 'max_mark': 100},
         ]
         
         for crit_data in criteria_data:
@@ -422,10 +422,10 @@ class Command(BaseCommand):
         """Create comprehensive assessment marks for Sasindu across all completed courses"""
         sc_data = [
             # Japanese Language Level I
-            {'id': 1, 'students_id': 2, 'criterias_id': 1, 'mark': '84'},   # Mid-Term Test
-            {'id': 2, 'students_id': 2, 'criterias_id': 2, 'mark': '88'},   # Oral Presentation
-            {'id': 3, 'students_id': 2, 'criterias_id': 3, 'mark': '85'},   # Final Written
-            {'id': 4, 'students_id': 2, 'criterias_id': 4, 'mark': '86'},   # Final Oral
+            {'id': 1, 'students_id': 2, 'criterias_id': 1, 'mark': '10'},   # Mid-Term Test
+            {'id': 2, 'students_id': 2, 'criterias_id': 2, 'mark': '18'},   # Oral Presentation
+            {'id': 3, 'students_id': 2, 'criterias_id': 3, 'mark': '15'},   # Final Written
+            {'id': 4, 'students_id': 2, 'criterias_id': 4, 'mark': '16'},   # Final Oral
 
             # Computer Fundamentals
             {'id': 5, 'students_id': 2, 'criterias_id': 5, 'mark': '90'},   # Theory Quiz

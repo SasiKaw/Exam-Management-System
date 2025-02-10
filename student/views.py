@@ -78,10 +78,27 @@ def show_results(request):
             ORDER BY s.start_date DESC
         """, [student.id])
         
-        # Base query
+        # Define grade points
+        grade_points = {
+            'A+': 4.0, 'A': 4.0, 'A-': 3.7,
+            'B+': 3.3, 'B': 3.0, 'B-': 2.7,
+            'C+': 2.3, 'C': 2.0, 'C-': 1.7,
+            'D+': 1.3, 'D': 1.0, 'E': 0.0,
+            'I': 0.0, 'T': 0.0, 'F': 0.0,
+            'NC': 0.0, 'NE': 0.0, 'AC': 0.0,
+            'AE': 0.0, 'AF': 0.0, 'NA': 0.0,
+            'AA': 0.0, 'X': 0.0
+        }
+
+        # Base query to get results
         query = """
-            SELECT r.*, sb.name as subject_name, sb.total_credit, 
-                   s.start_date, s.end_date
+            SELECT r.*, 
+                   sb.name as subject_name, 
+                   sb.code as subject_code,
+                   sb.total_credit,
+                   s.start_date, s.end_date,
+                   s.id as semester_id,
+                   CONCAT('Semester ', s.id) as semester_name
             FROM results r
             JOIN courses c ON c.id = r.courses_id 
             JOIN subjects sb ON sb.id = c.subjects_id
@@ -90,19 +107,95 @@ def show_results(request):
         """
         params = [student.id]
         
-        # Add semester filter if selected
         if selected_semester:
             query += " AND s.id = %s"
             params.append(selected_semester)
             
-        query += " ORDER BY s.start_date DESC, sb.name"
+        query += " ORDER BY s.start_date, sb.code"
         
         results = Results.objects.raw(query, params)
         
+        # Process results semester by semester
+        semester_stats = {}
+        cumulative_stats = {
+            'total_credits': 0,
+            'total_gpv': 0,
+            'courses_count': 0
+        }
+        
+        # Calculate semester-wise statistics
+        for result in results:
+            semester_id = result.semester_id
+            
+            if semester_id not in semester_stats:
+                semester_stats[semester_id] = {
+                    'name': f"Semester {semester_id}",
+                    'courses': [],
+                    'credits': 0,
+                    'gpv': 0,
+                    'gpa': 0,
+                    'cumulative_credits': 0,
+                    'cumulative_gpv': 0,
+                    'cumulative_gpa': 0
+                }
+            
+            # Calculate course GPV
+            credits = float(result.total_credit)
+            grade_point = grade_points.get(result.grade, 0)
+            course_gpv = credits * grade_point
+            
+            # Add course details
+            course_detail = {
+                'code': result.subject_code,
+                'name': result.subject_name,
+                'credits': credits,
+                'grade': result.grade,
+                'grade_point': grade_point,
+                'gpv': course_gpv
+            }
+            
+            semester_stats[semester_id]['courses'].append(course_detail)
+            semester_stats[semester_id]['credits'] += credits
+            semester_stats[semester_id]['gpv'] += course_gpv
+            
+            cumulative_stats['courses_count'] += 1
+        
+        # Calculate cumulative statistics
+        running_credits = 0
+        running_gpv = 0
+        
+        for semester_id in sorted(semester_stats.keys()):
+            stats = semester_stats[semester_id]
+            
+            # Calculate semester GPA
+            if stats['credits'] > 0:
+                stats['gpa'] = round(stats['gpv'] / stats['credits'], 2)
+            
+            # Update running totals
+            running_credits += stats['credits']
+            running_gpv += stats['gpv']
+            
+            # Store cumulative statistics
+            stats['cumulative_credits'] = running_credits
+            stats['cumulative_gpv'] = running_gpv
+            if running_credits > 0:
+                stats['cumulative_gpa'] = round(running_gpv / running_credits, 2)
+            
+            # Update final stats
+            cumulative_stats['total_credits'] = running_credits
+            cumulative_stats['total_gpv'] = running_gpv
+        
+        # Calculate final CGPA
+        cgpa = round(cumulative_stats['total_gpv'] / cumulative_stats['total_credits'], 2) \
+               if cumulative_stats['total_credits'] > 0 else 0
+        
         context.update({
-            'results': results,
+            'student': student,
             'semesters': semesters,
-            'selected_semester': selected_semester
+            'selected_semester': selected_semester,
+            'semester_stats': semester_stats,
+            'cumulative_stats': cumulative_stats,
+            'cgpa': cgpa
         })
         
     except Students.DoesNotExist:
