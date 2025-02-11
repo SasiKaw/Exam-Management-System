@@ -123,7 +123,7 @@ def show_results(request):
             'courses_count': 0
         }
         
-        # Calculate semester-wise statistics
+         # Initialize semester dictionary if not already created
         for result in results:
             semester_id = result.semester_id
             

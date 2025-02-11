@@ -39,7 +39,8 @@ class Command(BaseCommand):
         groups_data = [
             {'id': 3, 'name': 'Student'},
             {'id': 4, 'name': 'Lecturer'},
-            {'id': 5, 'name': 'HOD'}
+            {'id': 5, 'name': 'HOD'},
+            {'id': 6, 'name': 'BOE'}
         ]
         
         for group in groups_data:
@@ -86,6 +87,13 @@ class Command(BaseCommand):
                 'is_active': True,
                 'date_joined': make_aware(datetime.datetime.strptime('2024-12-19 03:41:10.000000', '%Y-%m-%d %H:%M:%S.%f'))
             },
+            {
+                'id': 23,
+                'username': 'Roshini',
+                'password': 'pbkdf2_sha256$720000$e7rgNOFBv7QG5tjmdaDQUq$ad6nz3bTvT9A6tV1iK9Z6wcsLWH6MbBkzQVPt+VXIZQ=',
+                'is_active': True,
+                'date_joined': make_aware(datetime.datetime.strptime('2025-02-11 04:07:21.000000', '%Y-%m-%d %H:%M:%S.%f'))
+            },
         ]
         
         for user_data in users_data:
@@ -98,6 +106,7 @@ class Command(BaseCommand):
             {'user_id': 16, 'group_id': 3},  # Sasindu -> Student
             {'user_id': 18, 'group_id': 4},  # Janith -> Lecturer
             {'user_id': 22, 'group_id': 5},  # Bashini -> HOD
+            {'user_id': 23, 'group_id': 6},  # Roshini -> BOE
         ]
         
         for assignment in assignments:
@@ -413,6 +422,13 @@ class Command(BaseCommand):
             {'id': 51, 'nature': 'Quiz', 'type': 'CA', 'name': 'Math Quiz', 'weights': 55, 'courses_id': 13, 'max_mark': 100},
             {'id': 52, 'nature': 'Quiz', 'type': 'CA', 'name': 'Problem Sets', 'weights': 45, 'courses_id': 13, 'max_mark': 100},
             {'id': 53, 'nature': 'MCQ', 'type': 'FE', 'name': 'Final Exam', 'weights': 100, 'courses_id': 13, 'max_mark': 100},
+
+             # statistic I for SE (30:70 ratio)
+            {'id': 54, 'nature': 'Quiz', 'type': 'CA', 'name': 'CA 1', 'weights': 25, 'courses_id': 17, 'max_mark': 100},
+            {'id': 55, 'nature': 'Quiz', 'type': 'CA', 'name': 'CA 2', 'weights': 75, 'courses_id': 17, 'max_mark': 100},
+            {'id': 56, 'nature': 'MCQ', 'type': 'FE', 'name': 'Final Theory', 'weights': 30, 'courses_id': 17, 'max_mark': 100},
+            {'id': 57, 'nature': 'Essay', 'type': 'FE', 'name': 'Final Quiz', 'weights': 70, 'courses_id': 17, 'max_mark': 100},
+
         ]
         
         for crit_data in criteria_data:
@@ -508,7 +524,7 @@ class Command(BaseCommand):
         """Create final results with grades for Sasindu"""
         results_data = [
             # First Semester
-            {'id': 1, 'grade': 'A', 's_grade': 'A', 'courses_id': 1, 'students_id': 2},  # Japanese I
+            {'id': 1, 'grade': 'E', 's_grade': 'A', 'courses_id': 1, 'students_id': 2},  # Japanese I
             {'id': 2, 'grade': 'A', 's_grade': 'A', 'courses_id': 2, 'students_id': 2},  # Computer Fundamentals
             {'id': 3, 'grade': 'A', 's_grade': 'A', 'courses_id': 3, 'students_id': 2},  # Programming Fundamentals
             {'id': 4, 'grade': 'A+', 's_grade': 'A+', 'courses_id': 4, 'students_id': 2},  # Technical Writing
