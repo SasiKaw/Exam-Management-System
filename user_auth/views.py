@@ -21,10 +21,9 @@ def login_view(request):
         if user is not None:
             if user.is_active:
                 login(request, user)
-                messages.success(request, "Login sucessful!")
+                request.session['show_welcome'] = True
                 return redirect("user_auth:dashboard")
             else:
-                messages.warning(request, "Your account is pending activation.")
                 return render(request, "login.html", {'username': username})
         else:
             messages.error(request, "Invalid username or password.", extra_tags="login_only")
@@ -43,6 +42,9 @@ def custom_logout(request):
 def dashboard_view(request):
     
     context = {}
+    show_welcome = request.session.pop('show_welcome', False)
+    if show_welcome:
+        context['show_welcome'] = True
     
     if request.user.groups.first().name == 'HOD':
         total_students = Students.objects.filter(auth_user__is_active=True).count()

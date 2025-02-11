@@ -344,7 +344,11 @@
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                window.location.href = "{% url 'Results:finalize_dashboard' %}";
+                showSaveSuccess();
+                setTimeout(() => {
+                    window.location.href = "{% url 'Results:finalize_dashboard' %}";
+                }, 2300);
+                
             } else {
                 alert('Error saving results: ' + data.message);
             }
@@ -613,6 +617,32 @@
             }
         }
     })
+
+    function showSaveSuccess() {
+        Swal.fire({
+            title: 'Published Successfully',
+            text: 'Course results have been published',
+            icon: 'success',
+            confirmButtonText: 'Continue',
+            confirmButtonColor: '#1e2532',
+            customClass: {
+                popup: 'animated fadeInDown faster',
+                title: 'text-lg font-semibold',
+                confirmButton: 'px-6 py-2.5 text-sm font-medium transition-colors duration-200'
+            },
+            showClass: {
+                popup: 'animate__animated animate__fadeIn'
+            },
+            hideClass: {
+                popup: 'animate__animated animate__fadeOut'
+            },
+            timer: 3000,
+            timerProgressBar: true,
+            backdrop: `
+                rgba(30, 37, 50, 0.4)
+            `
+        });
+    }
 
     // Add at the end of your script section
 // Update the submit button text based on mode
