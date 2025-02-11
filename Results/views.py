@@ -461,6 +461,7 @@ def get_grade_summary(request):
     course_id = request.GET.get('course_id')
     batch_id = request.GET.get('batch_id')
 
+    # Get results for the selected course and batch
     results = Results.objects.filter(
         courses_id=course_id,
         students__batches_id=batch_id
@@ -468,42 +469,26 @@ def get_grade_summary(request):
 
     total_results = results.count()
     
-    # Include all possible grades from the grading system
+    # Include all possible grades
     grades = ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D', 'E', 
               'NC', 'NE', 'AC', 'AE', 'AA', 'AF']
     
+    # Get current selections from dropdowns
+    current_selections = {}
+    for result in results:
+        # If grade is set, use it; otherwise use s_grade
+        current_selections[result.students_id] = result.grade if result.grade else result.s_grade
+
     grade_stats = []
     for grade in grades:
-        count = results.filter(s_grade=grade).count()
+        # Count occurrences of this grade in current selections
+        count = sum(1 for grade_value in current_selections.values() if grade_value == grade)
         percentage = (count / total_results * 100) if total_results > 0 else 0
         
-        # Get description based on grade
-        description = {
-            'A+': 'Excellent',
-            'A': 'Very Good',
-            'A-': 'Good',
-            'B+': 'Good',
-            'B': 'Pass',
-            'B-': 'Pass',
-            'C+': 'Pass',
-            'C': 'Weak Pass',
-            'C-': 'Weak Pass',
-            'D+': 'Conditional Pass',
-            'D': 'Minimal Pass',
-            'E': 'Fail',
-            'NC': 'Not completed Continuous Assessments',
-            'NE': 'Not completed the Final Examination',
-            'AC': 'Absent for Continuous Assessments',
-            'AE': 'Absent for Final Examination',
-            'AA': 'Absent for both CA and Final',
-            'AF': 'Absent for CA and failed final'
-        }.get(grade, '')
-
         grade_stats.append({
             'grade': grade,
             'count': count,
-            'percentage': round(percentage, 1),
-            'description': description
+            'percentage': round(percentage, 1)
         })
 
     return JsonResponse({
