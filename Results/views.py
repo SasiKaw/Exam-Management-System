@@ -310,7 +310,7 @@ def calculate_grade(mark):
     elif 0 <= mark <= 24:
         return 'E'
     
-    return 'E', 0  # Default case
+    return 'E'  # Default case
 
 def determine_attempt_status(ca_marks, fe_marks):
     """
@@ -472,7 +472,7 @@ def get_grade_summary(request):
     
     grade_stats = []
     for grade in grades:
-        count = results.filter(grade=grade).count()
+        count = results.filter(s_grade=grade).count()
         percentage = (count / total_results * 100) if total_results > 0 else 0
         
         # Get description based on grade

@@ -154,7 +154,8 @@ def save_courses(request):
                         # Create batch association
                         CoursesBatches.objects.create(
                             courses=course,
-                            batches_id=batch_id
+                            batches_id=batch_id,
+                            status=0
                         )
                         
                         created_courses.append(course.id)

@@ -265,7 +265,7 @@ function addCriteriaGroup(type) {
     const numQuestions = parseInt(document.getElementById(`${type.toLowerCase()}Questions`).value);
     if (!numQuestions || numQuestions <= 0) return;
 
-    const currentCriteria = type === 'CA' ? state.caCriteria : state.feCriteria;
+    const currentCriteria = type === 'CA' ? state.caCriteria : state.feCriteria; 
 
     const lastNumber = Math.max(...currentCriteria.map(c => {
         const match = c.name.match(/\d+/);

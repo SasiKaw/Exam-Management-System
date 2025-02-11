@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS `courses_batches` (
   `ID` int NOT NULL AUTO_INCREMENT,
   `Courses_ID` int NOT NULL,
   `Batches_ID` int NOT NULL,
-  `status` tinyint NOT NULL DEFAULT '0',
+  `status` tinyint  DEFAULT 0,
   PRIMARY KEY (`ID`),
   CONSTRAINT `fk_Courses_Batches_Courses1`
     FOREIGN KEY (`Courses_ID`)
