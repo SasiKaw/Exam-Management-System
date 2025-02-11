@@ -318,24 +318,24 @@ class Command(BaseCommand):
         """Create course enrollments with final marks for Sasindu"""
         enrollments_data = [
             # First Semester
-            {'enroll_id': 1, 'marks': 14.67, 'students_id': 2, 'courses_id': 1},  # Japanese I
-            {'enroll_id': 2, 'marks': 88.2, 'students_id': 2, 'courses_id': 2},  # Computer Fundamentals
-            {'enroll_id': 3, 'marks': 86.4, 'students_id': 2, 'courses_id': 3},  # Programming Fundamentals
-            {'enroll_id': 4, 'marks': 90.0, 'students_id': 2, 'courses_id': 4},  # Technical Writing
-            {'enroll_id': 5, 'marks': 82.5, 'students_id': 2, 'courses_id': 5},  # Mathematics I
+            {'enroll_id': 1, 'marks': 14.67, 'students_id': 2, 'courses_id': 1, 'level': 1},  # Japanese I
+            {'enroll_id': 2, 'marks': 88.2, 'students_id': 2, 'courses_id': 2, 'level': 1},  # Computer Fundamentals
+            {'enroll_id': 3, 'marks': 86.4, 'students_id': 2, 'courses_id': 3, 'level': 1},  # Programming Fundamentals
+            {'enroll_id': 4, 'marks': 90.0, 'students_id': 2, 'courses_id': 4, 'level': 1},  # Technical Writing
+            {'enroll_id': 5, 'marks': 82.5, 'students_id': 2, 'courses_id': 5, 'level': 1},  # Mathematics I
             
             # Second Semester
-            {'enroll_id': 6, 'marks': 84.8, 'students_id': 2, 'courses_id': 6},  # Japanese II
-            {'enroll_id': 7, 'marks': 86.2, 'students_id': 2, 'courses_id': 7},  # Database Systems
-            {'enroll_id': 8, 'marks': 88.5, 'students_id': 2, 'courses_id': 8},  # Web Programming
-            {'enroll_id': 9, 'marks': 83.0, 'students_id': 2, 'courses_id': 9},  # Mathematics II
+            {'enroll_id': 6, 'marks': 84.8, 'students_id': 2, 'courses_id': 6, 'level': 2},  # Japanese II
+            {'enroll_id': 7, 'marks': 86.2, 'students_id': 2, 'courses_id': 7, 'level': 2},  # Database Systems
+            {'enroll_id': 8, 'marks': 88.5, 'students_id': 2, 'courses_id': 8, 'level': 2},  # Web Programming
+            {'enroll_id': 9, 'marks': 83.0, 'students_id': 2, 'courses_id': 9, 'level': 2},  # Mathematics II
             
             # Third Semester
-            {'enroll_id': 10, 'marks': 85.5, 'students_id': 2, 'courses_id': 10},  # Data Structures
-            {'enroll_id': 11, 'marks': 87.2, 'students_id': 2, 'courses_id': 11},  # Software Architecture
-            {'enroll_id': 12, 'marks': 89.0, 'students_id': 2, 'courses_id': 12},  # Visual Programming
-            {'enroll_id': 13, 'marks': 84.5, 'students_id': 2, 'courses_id': 13},  # Mathematics III
-
+            {'enroll_id': 10, 'marks': 85.5, 'students_id': 2, 'courses_id': 10, 'level': 3},  # Data Structures
+            {'enroll_id': 11, 'marks': 87.2, 'students_id': 2, 'courses_id': 11, 'level': 3},  # Data StructuresSoftware Architecture
+            {'enroll_id': 12, 'marks': 89.0, 'students_id': 2, 'courses_id': 12, 'level': 3},  # Data StructuresVisual Programming
+            {'enroll_id': 13, 'marks': 84.5, 'students_id': 2, 'courses_id': 13, 'level': 3},  # Data StructuresMathematics III
+            {'enroll_id': 14, 'marks': 80.67, 'students_id': 2, 'courses_id': 1, 'level': 3}, 
         ]
         
         for enroll_data in enrollments_data:
@@ -524,7 +524,7 @@ class Command(BaseCommand):
         """Create final results with grades for Sasindu"""
         results_data = [
             # First Semester
-            {'id': 1, 'grade': 'E', 's_grade': 'A', 'courses_id': 1, 'students_id': 2},  # Japanese I
+            {'id': 1, 'grade': 'E', 's_grade': 'E', 'courses_id': 1, 'students_id': 2},  # Japanese I
             {'id': 2, 'grade': 'A', 's_grade': 'A', 'courses_id': 2, 'students_id': 2},  # Computer Fundamentals
             {'id': 3, 'grade': 'A', 's_grade': 'A', 'courses_id': 3, 'students_id': 2},  # Programming Fundamentals
             {'id': 4, 'grade': 'A+', 's_grade': 'A+', 'courses_id': 4, 'students_id': 2},  # Technical Writing
@@ -541,6 +541,7 @@ class Command(BaseCommand):
             {'id': 11, 'grade': 'A', 's_grade': 'A', 'courses_id': 11, 'students_id': 2},  # Software Architecture
             {'id': 12, 'grade': 'A', 's_grade': 'A', 'courses_id': 12, 'students_id': 2},  # Visual Programming
             {'id': 13, 'grade': 'A', 's_grade': 'A', 'courses_id': 13, 'students_id': 2},  # Mathematics III
+            {'id': 14, 'grade': 'C', 's_grade': 'C', 'courses_id': 1, 'students_id': 2},  # Japanese I
         ]
         
         for result_data in results_data:

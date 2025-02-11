@@ -138,7 +138,7 @@ class CoursesStudent(models.Model):
     marks = models.DecimalField(db_column='Marks', max_digits=10, decimal_places=0)  # Field name made lowercase.
     students = models.ForeignKey('Students', models.DO_NOTHING, db_column='Students_ID')  # Field name made lowercase.
     courses = models.ForeignKey(Courses, models.DO_NOTHING, db_column='Courses_ID')  # Field name made lowercase.
-    status = models.IntegerField(db_column='Status', blank=True, null=True)  # Field name made lowercase.
+    level = models.IntegerField(db_column='Level')  
 
     class Meta:
         managed = False

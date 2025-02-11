@@ -427,6 +427,8 @@ def save_criterion_marks(request):
                 else:
                     grade = calculate_grade(final_mark)
 
+                student = Students.objects.select_related('batches').get(id=student_id)
+                current_batch_level = student.batches.current_level
            
                 # Update course enrollment record
                 CoursesStudent.objects.update_or_create(
@@ -434,7 +436,7 @@ def save_criterion_marks(request):
                     courses_id=course_id,
                     defaults={
                         'marks': final_mark,
-                        'status': 1 if not attempt_status else 0
+                        'level': current_batch_level
                     }
                 )
 

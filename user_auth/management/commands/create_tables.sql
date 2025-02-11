@@ -183,7 +183,7 @@ CREATE TABLE IF NOT EXISTS `courses_student` (
   `Marks` decimal(10,0) NOT NULL,
   `Students_ID` int NOT NULL,
   `Courses_ID` int NOT NULL,
-  `Status` tinyint DEFAULT '0',
+  `Level` int NOT NULL,
   PRIMARY KEY (`Enroll_Id`),
   CONSTRAINT `fk_Students_Courses_Students`
     FOREIGN KEY (`Students_ID`)
