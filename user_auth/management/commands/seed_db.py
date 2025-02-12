@@ -540,8 +540,7 @@ class Command(BaseCommand):
             {'id': 10, 'grade': 'A', 's_grade': 'A', 'courses_id': 10, 'students_id': 2},  # Data Structures
             {'id': 11, 'grade': 'A', 's_grade': 'A', 'courses_id': 11, 'students_id': 2},  # Software Architecture
             {'id': 12, 'grade': 'A', 's_grade': 'A', 'courses_id': 12, 'students_id': 2},  # Visual Programming
-            {'id': 13, 'grade': 'A', 's_grade': 'A', 'courses_id': 13, 'students_id': 2},  # Mathematics III
-            {'id': 14, 'grade': 'C', 's_grade': 'C', 'courses_id': 1, 'students_id': 2},  # Japanese I
+            {'id': 13, 'grade': 'C-', 's_grade': 'A', 'courses_id': 13, 'students_id': 2},  # Mathematics III
         ]
         
         for result_data in results_data:
