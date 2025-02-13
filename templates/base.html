@@ -153,6 +153,14 @@
               <i class="fas fa-tasks w-6"></i>
               <span>Course Management</span>
             </a>
+
+            <a
+              href="{% url 'HOD:lecturer_assignment' %}"
+              class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white"
+          >
+            <i class="fas fa-chalkboard-teacher w-6"></i>
+            <span>Assign Lecturers</span>
+          </a>
             
             {% elif user.groups.first.name == 'BOE' %}
             <!-- BOE Navigation Items -->

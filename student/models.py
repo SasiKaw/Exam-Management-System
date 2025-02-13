@@ -202,7 +202,11 @@ class DjangoSession(models.Model):
 
 class Lecturers(models.Model):
     id = models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
+<<<<<<< HEAD
     name = models.CharField(db_column='Name', max_length=100)  # Field name made lowercase.
+=======
+    name = models.CharField(db_column='Name', max_length=100)  # Field name made lowercase..
+>>>>>>> a9197dcc07cc6201e099bd9f17cce04007eecb91
     auth_user = models.ForeignKey(AuthUser, models.DO_NOTHING)
 
     class Meta:

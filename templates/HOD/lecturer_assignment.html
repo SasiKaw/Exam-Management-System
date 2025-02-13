@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}Lecturer Assignment{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-lg shadow-sm p-6">
+    <div class="header mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">Lecturer Assignment</h1>
+        <p class="text-gray-600">Assign lecturers to courses for the current semester</p>
+    </div>
+
+    {% if messages %}
+    <div class="mb-4">
+        {% for message in messages %}
+        <div class="p-4 rounded-md {% if message.tags == 'success' %}bg-green-50 text-green-700{% else %}bg-red-50 text-red-700{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Courses List -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-lg font-semibold mb-4">Courses</h2>
+            <div class="space-y-4" id="coursesList">
+                {% for course in courses %}
+                <div class="p-4 border rounded-md hover:bg-gray-50">
+                    <div class="mb-3">
+                        <h3 class="font-medium text-lg">{{ course.subjects.name }}</h3>
+                        <p class="text-sm text-gray-500">{{ course.subjects.code }}</p>
+                        <p class="text-sm text-gray-600 mt-1">
+                            Batches: 
+                            {% for cb in course.coursesbatches_set.all %}
+                                {{ cb.batches.name }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </p>
+                    </div>
+
+                    <!-- Current Lecturer -->
+                    {% if course.courseslecturer_set.all %}
+                        {% for cl in course.courseslecturer_set.all %}
+                        <div class="flex justify-between items-center py-2 border-t">
+                            <span class="text-sm font-medium text-green-600">{{ cl.lectures.name }}</span>
+                            <form method="post" action="{% url 'HOD:remove_lecturer' cl.id %}" class="inline">
+                                {% csrf_token %}
+                                <button type="submit" class="text-sm text-red-500 hover:text-red-700">
+                                    Remove
+                                </button>
+                            </form>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <!-- Assign Form -->
+                    <form method="post" action="{% url 'HOD:assign_lecturer' course.id %}" class="mt-3">
+                        {% csrf_token %}
+                        <div class="flex gap-2">
+                            <select name="lecturer_id" class="flex-1 border rounded px-3 py-2 text-sm bg-white">
+                                <option value="">Select lecturer...</option>
+                                {% for lecturer in lecturers %}
+                                <option value="{{ lecturer.id }}">{{ lecturer.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700">
+                                Assign
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Current Assignments Summary -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-lg font-semibold mb-4">Current Assignments</h2>
+            {% for lecturer in lecturers %}
+                {% with lecturer_courses=lecturer.courseslecturer_set.all %}
+                {% if lecturer_courses %}
+                <div class="mb-6 last:mb-0">
+                    <h3 class="font-medium text-gray-800 border-b pb-2">{{ lecturer.name }}</h3>
+                    <ul class="mt-2 space-y-2">
+                        {% for assignment in lecturer_courses %}
+                        <li class="text-sm text-gray-600 pl-4 border-l-2 border-gray-200">
+                            {{ assignment.courses.subjects.name }}
+                            <span class="text-gray-400">({{ assignment.courses.subjects.code }})</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                {% endwith %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

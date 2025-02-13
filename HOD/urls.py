@@ -10,4 +10,8 @@ urlpatterns = [
     path('get-batches/', views.get_batches, name='get_batches'),
     path('get-subjects/', views.get_subjects, name='get_subjects'),
     path('save-courses/', views.save_courses, name='save_courses'),
+
+    path('lecturer-assignment/', views.lecturer_assignment, name='lecturer_assignment'),
+    path('assign-lecturer/<int:course_id>/', views.assign_lecturer, name='assign_lecturer'),
+    path('remove-lecturer/<str:assignment_id>/', views.remove_lecturer, name='remove_lecturer'),
 ]
