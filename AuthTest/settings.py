@@ -90,7 +90,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'exammanagementsystem',
         'USER': 'root',
-        'PASSWORD': 'dini@1234',
+        'PASSWORD': '2468SEnt',
         'HOST': 'localhost',
         'PORT': '3306',
     }

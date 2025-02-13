@@ -202,8 +202,6 @@ class DjangoSession(models.Model):
 class Lecturers(models.Model):
     id = models.AutoField(db_column='ID', primary_key=True)
     name = models.CharField(db_column='Name', max_length=100)
-    phone_number = models.CharField(db_column='Phone_number', max_length=12)
-    email = models.CharField(db_column='Email', max_length=100)
     auth_user = models.ForeignKey('AuthUser', models.DO_NOTHING)
 
     class Meta:
