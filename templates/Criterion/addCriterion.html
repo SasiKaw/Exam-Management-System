@@ -258,12 +258,15 @@ async function handleProgramChange() {
 
 function addCriteriaGroup(type) {
     if (!state.courseId) {
-        alert('Please select a course first');
+        showCourseSelectionWarning();
         return;
     }
 
     const numQuestions = parseInt(document.getElementById(`${type.toLowerCase()}Questions`).value);
-    if (!numQuestions || numQuestions <= 0) return;
+    if (!numQuestions || numQuestions <= 0){
+        showInvalidWarning();
+        return;
+    }
 
     const currentCriteria = type === 'CA' ? state.caCriteria : state.feCriteria; 
 
@@ -673,7 +676,7 @@ async function submitCriteria(type) {
         console.log("Response:", data); // Debug log
         
         if (data.status === 'success') {
-            alert('Criteria saved successfully');
+            showSaveSuccess();
             handleCourseChange();
         } else {
             throw new Error(data.message);
@@ -682,6 +685,83 @@ async function submitCriteria(type) {
         console.error('Error:', error);
         alert('Error saving criteria');
     }
+}
+function showSaveSuccess() {
+    Swal.fire({
+        title: 'Saved Successfully',
+        text: 'Assessment criteria have been updated and saved',
+        icon: 'success',
+        confirmButtonText: 'Continue',
+        confirmButtonColor: '#1e2532',
+        customClass: {
+            popup: 'animated fadeInDown faster',
+            title: 'text-lg font-semibold',
+            confirmButton: 'px-6 py-2.5 text-sm font-medium transition-colors duration-200'
+        },
+        showClass: {
+            popup: 'animate__animated animate__fadeIn'
+        },
+        hideClass: {
+            popup: 'animate__animated animate__fadeOut'
+        },
+        timer: 3000,
+        timerProgressBar: true,
+        backdrop: `
+            rgba(30, 37, 50, 0.4)
+        `
+    });
+}
+
+function showCourseSelectionWarning() {
+    Swal.fire({
+        title: 'Course Selection Required',
+        text: 'Please select a course before adding assessment criteria',
+        icon: 'warning',
+        confirmButtonText: 'Understood',
+        confirmButtonColor: '#1e2532',
+        customClass: {
+            popup: 'animated shake faster',
+            title: 'text-lg font-semibold text-gray-800',
+            htmlContainer: 'text-base text-gray-600',
+            confirmButton: 'px-6 py-2.5 text-sm font-medium transition-colors duration-200'
+        },
+        showClass: {
+            popup: 'animate__animated animate__fadeIn'
+        },
+        hideClass: {
+            popup: 'animate__animated animate__fadeOut'
+        },
+        background: '#ffffff',
+        backdrop: `
+            rgba(30, 37, 50, 0.4)
+        `
+    });
+}
+
+function showInvalidWarning() {
+    Swal.fire({
+        title: 'Invalid Number',
+        text: 'Please enter a valid number',
+        icon: 'warning',
+        confirmButtonText: 'Understood',
+        confirmButtonColor: '#1e2532',
+        customClass: {
+            popup: 'animated shake faster',
+            title: 'text-lg font-semibold text-gray-800',
+            htmlContainer: 'text-base text-gray-600',
+            confirmButton: 'px-6 py-2.5 text-sm font-medium transition-colors duration-200'
+        },
+        showClass: {
+            popup: 'animate__animated animate__fadeIn'
+        },
+        hideClass: {
+            popup: 'animate__animated animate__fadeOut'
+        },
+        background: '#ffffff',
+        backdrop: `
+            rgba(30, 37, 50, 0.4)
+        `
+    });
 }
 
 

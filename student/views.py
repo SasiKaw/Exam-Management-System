@@ -3,6 +3,9 @@ from django.contrib import messages
 from .forms import StudentRegistrationForm
 from .models import *
 from django.contrib.auth import logout as auth_logout
+from django.http import JsonResponse
+from django.db import transaction
+import json
 
 
 def student_registration(request):
@@ -205,3 +208,162 @@ def show_results(request):
         messages.error(request, "Error loading results data.")
     
     return render(request, 'student/results.html', context)
+
+
+def show_repeat_courses(request):
+    """
+    Display repeat-eligible courses for the current student with their available repeat assessment options
+    """
+    context = {}
+    
+    try:
+        # Get the current student record with related batch information
+        student = Students.objects.select_related('batches').get(auth_user_id=request.user.id)
+        
+        # Define grades that make a student eligible for repeating
+        failing_grades = ['C-', 'D+', 'D', 'E', 'NC', 'NE', 'AC', 'AE', 'AA', 'AF']
+        
+        # SQL query to fetch course details and repeat eligibility
+        query = """
+            SELECT 
+                r.*,  -- All result fields
+                sb.name as subject_name, 
+                sb.code as subject_code,
+                sb.total_credit as credits,
+                sb.ca as ca_component,    -- Boolean indicating if course has CA component
+                sb.fe as fe_component,    -- Boolean indicating if course has FE component
+                c.id as course_id,
+                
+                -- Check if student already has a pending repeat application
+                EXISTS(
+                    SELECT 1 
+                    FROM repeat_enrollment re 
+                    WHERE re.courses_id = c.id 
+                    AND re.students_id = %s
+                ) as has_pending_application,
+                
+                -- Get the assessment components information
+                (SELECT 
+                    JSON_ARRAYAGG(
+                        JSON_OBJECT(
+                            'nature', cr.nature,
+                            'type', cr.type,
+                            'weights', cr.weights
+                        )
+                    )
+                FROM criterias cr 
+                WHERE cr.courses_id = c.id
+                ) as assessment_details
+                
+            FROM results r
+            JOIN courses c ON c.id = r.courses_id 
+            JOIN subjects sb ON sb.id = c.subjects_id
+            WHERE r.students_id = %s
+            AND r.grade IN %s
+            ORDER BY sb.code
+        """
+        
+        # Execute the raw query with parameters
+        repeat_courses = Results.objects.raw(
+            query, 
+            [student.id, student.id, tuple(failing_grades)]
+        )
+        
+        # Process the results to determine eligible components
+        processed_courses = []
+        for course in repeat_courses:
+            # Create a dictionary with course information
+            course_dict = {
+                'course_id': course.course_id,
+                'subject_code': course.subject_code,
+                'subject_name': course.subject_name,
+                'credits': course.credits,
+                'grade': course.grade,
+                'has_pending_application': course.has_pending_application,
+                'assessment_options': []  # List to store available assessment options
+            }
+          
+            # Add CA option if course has CA component
+            if course.ca_component > 0:  # Checking if there's a CA weightage
+                course_dict['assessment_options'].append({
+                    'value': 'CA',
+                    'label': f'Continuous Assessment ({course.ca_component}%)'
+                })
+            
+            # Add FE option if course has FE component
+            if course.fe_component > 0:  # Checking if there's an FE weightage
+                course_dict['assessment_options'].append({
+                    'value': 'FE',
+                    'label': f'Final Examination ({course.fe_component}%)'
+                })
+            
+            processed_courses.append(course_dict)
+        
+        # Add processed courses to context
+        context['repeat_courses'] = processed_courses
+        
+    except Students.DoesNotExist:
+        messages.error(request, "Student record not found.")
+    except Exception as e:
+        print(f"Error fetching repeat courses: {e}")
+        messages.error(request, "Error loading repeat courses data.")
+    
+    return render(request, 'student/repeat_courses.html', context)
+
+@transaction.atomic
+def apply_repeat(request):
+    """
+    Handle repeat course application submission
+    """
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+    
+    try:
+        data = json.loads(request.body)
+        course_id = data.get('course_id')
+        assessment_type = data.get('assessment_type')
+        
+        if not all([course_id, assessment_type]):
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Missing required fields'
+            })
+        
+        student = Students.objects.get(auth_user_id=request.user.id)
+        
+        # Check if application already exists
+        existing_application = RepeatEnrollments.objects.filter(
+            students=student,
+            courses_id=course_id
+        ).exists()
+        
+        if existing_application:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Application already exists for this course'
+            })
+        
+        # Create new repeat enrollment
+        RepeatEnrollments.objects.create(
+            students=student,
+            courses_id=course_id,
+            assessment_type=assessment_type,
+            attemp_no=2  # You might want to calculate this based on previous attempts
+        )
+        
+        return JsonResponse({
+            'status': 'success',
+            'message': 'Application submitted successfully'
+        })
+        
+    except Students.DoesNotExist:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Student record not found'
+        })
+    except Exception as e:
+        print(f"Error processing repeat application: {e}")
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Failed to process application'
+        })

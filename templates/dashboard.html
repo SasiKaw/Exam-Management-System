@@ -57,48 +57,79 @@
             </div>
         </div>
     </div>
-        {% elif user.groups.first.name == 'HOD' %}
-      <div class="flex justify-center items-center w-full">  <!-- Added flex container -->
-        <div class="max-w-7xl w-full px-4 sm:px-6 lg:px-8">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <!-- HOD Card 1 -->
-            <div class="w-full bg-white rounded-lg shadow-sm p-6">
-              <div class="flex flex-col items-center text-center">
-                <div class="bg-blue-100 rounded-full p-4 mb-3">
-                  <i class="fas fa-users text-blue-600 text-2xl"></i>
-                </div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-2">Total Students</h3>
-                <p class="text-3xl font-bold text-blue-600">{{ total_students|default:"0" }}</p>
+  {% elif user.groups.first.name == 'HOD' %}
+    <div class="flex justify-center items-center w-full">  <!-- Added flex container -->
+      <div class="max-w-7xl w-full px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <!-- HOD Card 1 -->
+          <div class="w-full bg-white rounded-lg shadow-sm p-6">
+            <div class="flex flex-col items-center text-center">
+              <div class="bg-blue-100 rounded-full p-4 mb-3">
+                <i class="fas fa-users text-blue-600 text-2xl"></i>
               </div>
+              <h3 class="text-lg font-semibold text-gray-900 mb-2">Total Students</h3>
+              <p class="text-3xl font-bold text-blue-600">{{ total_students|default:"0" }}</p>
             </div>
+          </div>
 
-            <!-- HOD Card 2 -->
-            <div class="w-full bg-white rounded-lg shadow-sm p-6">
-              <div class="flex flex-col items-center text-center">
-                <div class="bg-green-100 rounded-full p-4 mb-3">
-                  <i class="fas fa-book text-green-600 text-2xl"></i>
-                </div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-2">Active Subjects</h3>
-                <p class="text-3xl font-bold text-green-600">{{ active_subjects|default:"0" }}</p>
+          <!-- HOD Card 2 -->
+          <div class="w-full bg-white rounded-lg shadow-sm p-6">
+            <div class="flex flex-col items-center text-center">
+              <div class="bg-green-100 rounded-full p-4 mb-3">
+                <i class="fas fa-book text-green-600 text-2xl"></i>
               </div>
+              <h3 class="text-lg font-semibold text-gray-900 mb-2">Active Subjects</h3>
+              <p class="text-3xl font-bold text-green-600">{{ active_subjects|default:"0" }}</p>
             </div>
+          </div>
 
-            <!-- HOD Card 3 -->
-            <div class="w-full bg-white rounded-lg shadow-sm p-6">
-              <div class="flex flex-col items-center text-center">
-                <div class="bg-purple-100 rounded-full p-4 mb-3">
-                  <i class="fas fa-calendar text-purple-600 text-2xl"></i>
-                </div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-2">Current Semester</h3>
-                <p class="text-3xl font-bold text-purple-600">
-                  {{ current_semester.start_date|date:"M Y" }}/{{ current_semester.end_date|date:"M Y" }}
-                </p>
+          <!-- HOD Card 3 -->
+          <div class="w-full bg-white rounded-lg shadow-sm p-6">
+            <div class="flex flex-col items-center text-center">
+              <div class="bg-purple-100 rounded-full p-4 mb-3">
+                <i class="fas fa-calendar text-purple-600 text-2xl"></i>
               </div>
+              <h3 class="text-lg font-semibold text-gray-900 mb-2">Current Semester</h3>
+              <p class="text-3xl font-bold text-purple-600">
+                {{ current_semester.start_date|date:"M Y" }}/{{ current_semester.end_date|date:"M Y" }}
+              </p>
             </div>
           </div>
         </div>
       </div>
+    </div>
   {% endif %}
-{% endblock %}
-  </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    {% if show_welcome %}
+      const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.addEventListener('mouseenter', Swal.stopTimer)
+          toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+      });
+
+      Toast.fire({
+        icon: 'success',
+        title: 'Welcome back, {{ user.get_full_name|default:user.username }}!',
+        customClass: {
+          popup: 'rounded-lg shadow-md',
+          title: 'text-sm font-medium text-gray-800',
+          timerProgressBar: 'bg-blue-600'
+        },
+        background: '#ffffff',
+        iconColor: '#1e2532'
+      });
+    {% endif %}
+  });
+</script>
+{% endblock %}

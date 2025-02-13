@@ -78,6 +78,24 @@ CREATE TABLE IF NOT EXISTS `courses` (
 ) ENGINE=InnoDB;
 
 -- -----------------------------------------------------
+-- Table `repeat_enrollment`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `repeat_enrollment` (
+  `ID` int NOT NULL AUTO_INCREMENT,
+  `attemp_no` int NOT NULL,
+  `assessment_type` VARCHAR(10) NOT NULL,
+  `students_ID` int NOT NULL,
+  `courses_ID` int NOT NULL,
+  PRIMARY KEY (`ID`),
+  CONSTRAINT `fk_repeat_enrollment_students`
+    FOREIGN KEY (`students_ID`)
+    REFERENCES `students` (`ID`),
+  CONSTRAINT `fk_repeat_enrollment_courses1`
+    FOREIGN KEY (`courses_ID`)
+    REFERENCES `courses` (`ID`)
+) ENGINE=InnoDB;
+
+-- -----------------------------------------------------
 -- Table `courses_batches`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `courses_batches` (
@@ -183,7 +201,8 @@ CREATE TABLE IF NOT EXISTS `courses_student` (
   `Marks` decimal(10,0) NOT NULL,
   `Students_ID` int NOT NULL,
   `Courses_ID` int NOT NULL,
-  `Status` tinyint DEFAULT '0',
+  `Level` int NULL,
+  `Attemp` int NULL,
   PRIMARY KEY (`Enroll_Id`),
   CONSTRAINT `fk_Students_Courses_Students`
     FOREIGN KEY (`Students_ID`)

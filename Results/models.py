@@ -138,7 +138,8 @@ class CoursesStudent(models.Model):
     marks = models.DecimalField(db_column='Marks', max_digits=10, decimal_places=0)  # Field name made lowercase.
     students = models.ForeignKey('Students', models.DO_NOTHING, db_column='Students_ID')  # Field name made lowercase.
     courses = models.ForeignKey(Courses, models.DO_NOTHING, db_column='Courses_ID')  # Field name made lowercase.
-    status = models.IntegerField(db_column='Status', blank=True, null=True)  # Field name made lowercase.
+    level = models.IntegerField(db_column='Level')
+    attmp = models.IntegerField(db_column='Attemp')
 
     class Meta:
         managed = False
@@ -229,15 +230,14 @@ class Programs(models.Model):
 class RepeatEnrollments(models.Model):
     id = models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
     attemp_no = models.IntegerField(db_column='Attemp_no')  # Field name made lowercase.
-    repeat_date = models.DateField(db_column='Repeat_date')  # Field name made lowercase.
     assessment_type = models.CharField(db_column='Assessment_type', max_length=2, blank=True, null=True)  # Field name made lowercase.
     students = models.ForeignKey('Students', models.DO_NOTHING, db_column='Students_ID')  # Field name made lowercase.
     courses = models.ForeignKey(Courses, models.DO_NOTHING, db_column='Courses_ID')  # Field name made lowercase.
-    lecturers = models.ForeignKey(Lecturers, models.DO_NOTHING, db_column='Lecturers_ID')  # Field name made lowercase.
+
 
     class Meta:
         managed = False
-        db_table = 'repeat_enrollments'
+        db_table = 'repeat_enrollment'
 
 
 class Results(models.Model):

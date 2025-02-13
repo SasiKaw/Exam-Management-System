@@ -8,7 +8,7 @@ from django.db.models import F
 from django.http import JsonResponse
 from django.db import transaction
 from datetime import datetime
-from .models import Semesters, Programs, Batches, Subjects, Courses, CoursesBatches, Results
+from .models import *
 import json
 
 def semester_declaration(request):
@@ -117,7 +117,6 @@ def save_courses(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            print("Received data:", data)  # Debug log
             
             if not data.get('assignments'):
                 raise ValueError("No assignments provided")
@@ -138,6 +137,10 @@ def save_courses(request):
                     raise ValueError("Missing batch ID")
                 if not subjects:
                     raise ValueError("No subjects provided")
+                
+                batch_students = Students.objects.filter(batches_id=batch_id)
+                batch = Batches.objects.get(id=batch_id)
+                current_level = batch.current_level
 
                 for subject in subjects:
                     subject_id = subject.get('id')
@@ -157,7 +160,21 @@ def save_courses(request):
                             batches_id=batch_id,
                             status=0
                         )
+
+                        courses_students = []
+                        for student in batch_students:
+                            courses_students.append(
+                                CoursesStudent(
+                                    students=student,
+                                    courses=course,
+                                    level=current_level,
+                                    attmp=1,
+                                    marks=0
+                                )
+                            )
                         
+                        CoursesStudent.objects.bulk_create(courses_students)
+
                         created_courses.append(course.id)
                         
                     except Exception as e:
