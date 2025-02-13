@@ -216,8 +216,6 @@ CREATE TABLE IF NOT EXISTS `courses_student` (
 CREATE TABLE IF NOT EXISTS `lecturers` (
   `ID` int NOT NULL AUTO_INCREMENT,
   `Name` varchar(100) NOT NULL,
-  `Phone_number` varchar(12) NOT NULL,
-  `Email` varchar(100) NOT NULL,
   `auth_user_id` int NOT NULL,
   PRIMARY KEY (`ID`),
   CONSTRAINT `fk_lecturers_auth_user1` 

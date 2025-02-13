@@ -222,3 +222,53 @@ def validate_data(assignment):
     for subject in assignment["subjects"]:
         if "id" not in subject:
             raise ValueError("Subject missing ID")
+        
+        
+
+def lecturer_assignment(request):
+    context = {
+        'courses': Courses.objects.filter(
+            semesters__status=0
+        ).select_related('subjects').prefetch_related(
+            'coursesbatches_set__batches',
+            'courseslecturer_set__lectures'
+        ),
+        'lecturers': Lecturers.objects.prefetch_related(
+            'courseslecturer_set__courses__subjects'
+        ).all()
+    }
+    return render(request, 'HOD/lecturer_assignment.html', context)
+
+def assign_lecturer(request, course_id):
+    if request.method == 'POST':
+        lecturer_id = request.POST.get('lecturer_id')
+        
+        if not lecturer_id:
+            messages.error(request, 'Please select a lecturer')
+            return redirect('HOD:lecturer_assignment')
+            
+        try:
+            # Create unique ID for the assignment
+            assignment_id = f"LC_{course_id}_{lecturer_id}"
+            
+            CoursesLecturer.objects.create(
+                id=assignment_id,
+                courses_id=course_id,
+                lectures_id=lecturer_id
+            )
+            messages.success(request, 'Lecturer assigned successfully')
+            
+        except Exception as e:
+            messages.error(request, f'Error assigning lecturer: {str(e)}')
+            
+    return redirect('HOD:lecturer_assignment')
+
+def remove_lecturer(request, assignment_id):
+    if request.method == 'POST':
+        try:
+            CoursesLecturer.objects.filter(id=assignment_id).delete()
+            messages.success(request, 'Lecturer removed successfully')
+        except Exception as e:
+            messages.error(request, f'Error removing lecturer: {str(e)}')
+            
+    return redirect('HOD:lecturer_assignment')

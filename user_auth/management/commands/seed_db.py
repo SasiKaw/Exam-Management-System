@@ -22,6 +22,7 @@ class Command(BaseCommand):
             self.create_subjects()
             self.create_courses()
             self.create_courses_batches()
+            self.create_lecturers()
             self.create_students()
             self.create_courses_student()
             self.create_criterias()
@@ -95,11 +96,11 @@ class Command(BaseCommand):
                 'date_joined': make_aware(datetime.datetime.strptime('2025-02-11 04:07:21.000000', '%Y-%m-%d %H:%M:%S.%f'))
             },
             {
-            'id': 24,
-            'username': 'Oneli',
-            'password': 'pbkdf2_sha256$720000$gxIRqlHE4VR4i08aM3RX3b$6LLWxZCosQjph60gE5kc8q92YkBnyHaiiOYZo72SBv4=',
-            'is_active': True,
-            'date_joined': make_aware(datetime.datetime.strptime('2025-02-12 10:20:33.000000', '%Y-%m-%d %H:%M:%S.%f'))
+                'id': 24,
+                'username': 'Oneli',
+                'password': 'pbkdf2_sha256$720000$gxIRqlHE4VR4i08aM3RX3b$6LLWxZCosQjph60gE5kc8q92YkBnyHaiiOYZo72SBv4=',
+                'is_active': True,
+                'date_joined': make_aware(datetime.datetime.strptime('2025-02-12 10:20:33.000000', '%Y-%m-%d %H:%M:%S.%f'))
             },
             {
                 'id': 25,
@@ -143,6 +144,34 @@ class Command(BaseCommand):
                 'is_active': True,
                 'date_joined': make_aware(datetime.datetime.strptime('2025-02-12 10:24:09.000000', '%Y-%m-%d %H:%M:%S.%f'))
             },
+            {
+                'id': 31,
+                'username': 'Mewan',
+                'password': 'pbkdf2_sha256$720000$eEV55hc4DChpG3T6UVaw3O$4kkT5ot+fGgsEmHhvhkOYRoS+Rrl23/ndM3uncZPZTU=',
+                'is_active': True,
+                'date_joined': make_aware(datetime.datetime.strptime('2025-02-13 14:02:23.000000', '%Y-%m-%d %H:%M:%S.%f'))
+            },
+            {
+                'id': 32,
+                'username': 'Chobodhi',
+                'password': 'pbkdf2_sha256$720000$g2Bp3ZO3j6qaxQj2AjtMfa$vlmvHYjhhzAoutrzRapqJlqfCUZzhAiN30wAI9o/sZQ=',
+                'is_active': True,
+                'date_joined': make_aware(datetime.datetime.strptime('2025-02-13 14:02:56.000000', '%Y-%m-%d %H:%M:%S.%f'))
+            },
+            {
+                'id': 33,
+                'username': 'Geethika',
+                'password': 'pbkdf2_sha256$720000$ijHlXAsMb5CMnOwEfyujdD$KxmOuYD76ylIYg5wR1VVnc5dhfXIsGhbPZIQsvWIlBs=',
+                'is_active': True,
+                'date_joined': make_aware(datetime.datetime.strptime('2025-02-13 14:03:40.000000', '%Y-%m-%d %H:%M:%S.%f'))
+            },
+            {
+                'id': 34,
+                'username': 'Sudeshi',
+                'password': 'pbkdf2_sha256$720000$6SMdYxVIip2Od5pjx8sKNb$5PLNLLIwUQZ5ZVdWrK48wOh8+h3g6/qEw25+MWT37RU=',
+                'is_active': True,
+                'date_joined': make_aware(datetime.datetime.strptime('2025-02-13 14:10:43.000000', '%Y-%m-%d %H:%M:%S.%f'))
+            }
         ]
         
         for user_data in users_data:
@@ -163,6 +192,10 @@ class Command(BaseCommand):
             {'user_id': 28, 'group_id': 3},  # Oshani -> Student
             {'user_id': 29, 'group_id': 3},  # Sandil -> Student
             {'user_id': 30, 'group_id': 3},  # Pasindu -> Student
+            {'user_id': 31, 'group_id': 4},  # Mewan -> Lecturer
+            {'user_id': 32, 'group_id': 4},  # Chobodhi -> Lecturer
+            {'user_id': 33, 'group_id': 4},  # Geethika -> Lecturer
+            {'user_id': 34, 'group_id': 4},  # Sudeshi -> Lecturer
         ]
         
         for assignment in assignments:
@@ -336,7 +369,7 @@ class Command(BaseCommand):
             {'id': 10, 'courses_id': 10, 'batches_id': 1, 'status': 1},  # Data Structures - Completed
             {'id': 11, 'courses_id': 11, 'batches_id': 1, 'status': 1},  # Software Architecture - Completed
             {'id': 12, 'courses_id': 12, 'batches_id': 1, 'status': 1},  # Visual Programming - Completed
-            {'id': 13, 'courses_id': 13, 'batches_id': 1, 'status': 1},  # Mathematics III - Completed
+            {'id': 13, 'courses_id': 13, 'batches_id': 1, 'status': 0},  # Mathematics III - Completed
 
             # First Semester for SE02
             {'id': 14, 'courses_id': 1, 'batches_id': 2, 'status': 1},  # Japanese I
@@ -349,12 +382,40 @@ class Command(BaseCommand):
             {'id': 19, 'courses_id': 6, 'batches_id': 2, 'status': 1},  # Japanese II
             {'id': 20, 'courses_id': 7, 'batches_id': 2, 'status': 1},  # Database Systems
             {'id': 21, 'courses_id': 8, 'batches_id': 2, 'status': 1},  # Web Programming
-            {'id': 22, 'courses_id': 9, 'batches_id': 2, 'status': 1},  # Mathematics II
+            {'id': 22, 'courses_id': 9, 'batches_id': 2, 'status': 0},  # Mathematics II
 
         ]
         
         for cb in cb_data:
             CoursesBatches.objects.create(**cb)
+
+    def create_lecturers(self):
+        """Create lecturer records"""
+        lecturers_data = [
+            {
+                'name': 'Mewan Dissanayake',
+                'auth_user_id': 31
+            },
+            {
+                'name': 'Chobodhi Silva',
+                'auth_user_id': 32
+            },
+            {
+                'name': 'Geethika Fernando',
+                'auth_user_id': 33
+            },
+            {
+                'name': 'Sudeshi Perera',
+                'auth_user_id': 34
+            },
+            {
+                'name':'Janith perera',
+                'auth_user_id':18
+            }
+        ]
+        
+        for lecturer_data in lecturers_data:
+            Lecturers.objects.create(**lecturer_data)
 
     def create_students(self):
         """Create student records"""
@@ -387,13 +448,13 @@ class Command(BaseCommand):
             {'enroll_id': 6, 'marks': 84.8, 'students_id': 2, 'courses_id': 6, 'level': 2},  # Japanese II
             {'enroll_id': 7, 'marks': 86.2, 'students_id': 2, 'courses_id': 7, 'level': 2},  # Database Systems
             {'enroll_id': 8, 'marks': 88.5, 'students_id': 2, 'courses_id': 8, 'level': 2},  # Web Programming
-            {'enroll_id': 9, 'marks': 83.0, 'students_id': 2, 'courses_id': 9, 'level': 2},  # Mathematics II
+      
             
             # Third Semester
             {'enroll_id': 10, 'marks': 85.5, 'students_id': 2, 'courses_id': 10, 'level': 3},  # Data Structures
             {'enroll_id': 11, 'marks': 87.2, 'students_id': 2, 'courses_id': 11, 'level': 3},  # Data StructuresSoftware Architecture
             {'enroll_id': 12, 'marks': 89.0, 'students_id': 2, 'courses_id': 12, 'level': 3},  # Data StructuresVisual Programming
-            {'enroll_id': 13, 'marks': 84.5, 'students_id': 2, 'courses_id': 13, 'level': 3},  # Data StructuresMathematics III
+   
 
             # First Semester-avishka
             {'enroll_id': 14, 'marks': 68.5, 'students_id': 1, 'courses_id': 1, 'level': 1},  # Japanese I
@@ -406,13 +467,13 @@ class Command(BaseCommand):
             {'enroll_id': 19, 'marks': 74.8, 'students_id': 1, 'courses_id': 6, 'level': 2},  # Japanese II
             {'enroll_id': 20, 'marks': 76.2, 'students_id': 1, 'courses_id': 7, 'level': 2},  # Database Systems
             {'enroll_id': 21, 'marks': 77.5, 'students_id': 1, 'courses_id': 8, 'level': 2},  # Web Programming
-            {'enroll_id': 22, 'marks': 73.0, 'students_id': 1, 'courses_id': 9, 'level': 2},  # Mathematics II
+        
 
             # Third Semester
             {'enroll_id': 23, 'marks': 75.5, 'students_id': 1, 'courses_id': 10, 'level': 3},  # Data Structures
             {'enroll_id': 24, 'marks': 77.2, 'students_id': 1, 'courses_id': 11, 'level': 3},  # Software Architecture
             {'enroll_id': 25, 'marks': 76.0, 'students_id': 1, 'courses_id': 12, 'level': 3},  # Visual Programming
-            {'enroll_id': 26, 'marks': 74.5, 'students_id': 1, 'courses_id': 13, 'level': 3},  # Mathematics III
+            
 
              # First Semester - SE02 Students (Oneli - id: 3)
             {'enroll_id': 27, 'marks': 82.5, 'students_id': 3, 'courses_id': 1, 'level': 1},  # Japanese I
@@ -425,7 +486,7 @@ class Command(BaseCommand):
             {'enroll_id': 32, 'marks': 81.2, 'students_id': 3, 'courses_id': 6, 'level': 2},  # Japanese II
             {'enroll_id': 33, 'marks': 83.5, 'students_id': 3, 'courses_id': 7, 'level': 2},  # Database Systems
             {'enroll_id': 34, 'marks': 84.7, 'students_id': 3, 'courses_id': 8, 'level': 2},  # Web Programming
-            {'enroll_id': 35, 'marks': 77.9, 'students_id': 3, 'courses_id': 9, 'level': 2},  # Mathematics II
+        
 
             # First Semester - Dumindu (id: 4)
             {'enroll_id': 36, 'marks': 75.5, 'students_id': 4, 'courses_id': 1, 'level': 1},  # Japanese I
@@ -438,7 +499,7 @@ class Command(BaseCommand):
             {'enroll_id': 41, 'marks': 77.2, 'students_id': 4, 'courses_id': 6, 'level': 2},  # Japanese II
             {'enroll_id': 42, 'marks': 80.5, 'students_id': 4, 'courses_id': 7, 'level': 2},  # Database Systems
             {'enroll_id': 43, 'marks': 78.7, 'students_id': 4, 'courses_id': 8, 'level': 2},  # Web Programming
-            {'enroll_id': 44, 'marks': 75.9, 'students_id': 4, 'courses_id': 9, 'level': 2},  # Mathematics II   
+            
 
             # First Semester - Vindi (id: 5)
             {'enroll_id': 45, 'marks': 88.5, 'students_id': 5, 'courses_id': 1, 'level': 1},  # Japanese I
@@ -451,7 +512,7 @@ class Command(BaseCommand):
             {'enroll_id': 50, 'marks': 87.2, 'students_id': 5, 'courses_id': 6, 'level': 2},  # Japanese II
             {'enroll_id': 51, 'marks': 88.5, 'students_id': 5, 'courses_id': 7, 'level': 2},  # Database Systems
             {'enroll_id': 52, 'marks': 86.7, 'students_id': 5, 'courses_id': 8, 'level': 2},  # Web Programming
-            {'enroll_id': 53, 'marks': 85.9, 'students_id': 5, 'courses_id': 9, 'level': 2},  # Mathematics II
+         
 
             # First Semester - Suneth (id: 6)
             {'enroll_id': 54, 'marks': 35.5, 'students_id': 6, 'courses_id': 1, 'level': 1},  # Japanese I - Failed
@@ -464,7 +525,7 @@ class Command(BaseCommand):
             {'enroll_id': 59, 'marks': 67.2, 'students_id': 6, 'courses_id': 6, 'level': 2},  # Japanese II
             {'enroll_id': 60, 'marks': 65.5, 'students_id': 6, 'courses_id': 7, 'level': 2},  # Database Systems
             {'enroll_id': 61, 'marks': 66.7, 'students_id': 6, 'courses_id': 8, 'level': 2},  # Web Programming
-            {'enroll_id': 62, 'marks': 64.9, 'students_id': 6, 'courses_id': 9, 'level': 2},  # Mathematics II
+    
 
             # First Semester - Oshani (id: 7)
             {'enroll_id': 63, 'marks': 92.5, 'students_id': 7, 'courses_id': 1, 'level': 1},  # Japanese I
@@ -477,7 +538,7 @@ class Command(BaseCommand):
             {'enroll_id': 68, 'marks': 93.2, 'students_id': 7, 'courses_id': 6, 'level': 2},  # Japanese II
             {'enroll_id': 69, 'marks': 92.5, 'students_id': 7, 'courses_id': 7, 'level': 2},  # Database Systems
             {'enroll_id': 70, 'marks': 94.7, 'students_id': 7, 'courses_id': 8, 'level': 2},  # Web Programming
-            {'enroll_id': 71, 'marks': 91.9, 'students_id': 7, 'courses_id': 9, 'level': 2},  # Mathematics II 
+
         ]
         
         for enroll_data in enrollments_data:
