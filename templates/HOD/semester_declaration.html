@@ -395,7 +395,7 @@
         updateSemesterTable();
 
         // Show success message
-        showAlert('Semester declared successfully!', 'success');
+        showSaveSuccess();
 
         // Reset form
         setTimeout(() => {
@@ -472,6 +472,32 @@
         end.setDate(end.getDate() + (15 * 7)); // 15 weeks
         
         document.getElementById('endDate').value = end.toISOString().split('T')[0];
+    }
+
+    function showSaveSuccess() {
+        Swal.fire({
+            title: 'Saved Successfully',
+            text: 'Semester Declared Successfully',
+            icon: 'success',
+            confirmButtonText: 'Continue',
+            confirmButtonColor: '#1e2532',
+            customClass: {
+                popup: 'animated fadeInDown faster',
+                title: 'text-lg font-semibold',
+                confirmButton: 'px-6 py-2.5 text-sm font-medium transition-colors duration-200'
+            },
+            showClass: {
+                popup: 'animate__animated animate__fadeIn'
+            },
+            hideClass: {
+                popup: 'animate__animated animate__fadeOut'
+            },
+            timer: 3000,
+            timerProgressBar: true,
+            backdrop: `
+                rgba(30, 37, 50, 0.4)
+            `
+        });
     }
 </script>
 {% endblock %}

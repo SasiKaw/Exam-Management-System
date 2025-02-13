@@ -23,6 +23,7 @@ class Command(BaseCommand):
             self.create_courses()
             self.create_courses_batches()
             self.create_lecturers()
+            self.create_courses_lecturers()
             self.create_students()
             self.create_courses_student()
             self.create_criterias()
@@ -371,18 +372,6 @@ class Command(BaseCommand):
             {'id': 12, 'courses_id': 12, 'batches_id': 1, 'status': 1},  # Visual Programming - Completed
             {'id': 13, 'courses_id': 13, 'batches_id': 1, 'status': 0},  # Mathematics III - Completed
 
-            # First Semester for SE02
-            {'id': 14, 'courses_id': 1, 'batches_id': 2, 'status': 1},  # Japanese I
-            {'id': 15, 'courses_id': 2, 'batches_id': 2, 'status': 1},  # Computer Fundamentals
-            {'id': 16, 'courses_id': 3, 'batches_id': 2, 'status': 1},  # Programming Fundamentals
-            {'id': 17, 'courses_id': 4, 'batches_id': 2, 'status': 1},  # Technical Writing
-            {'id': 18, 'courses_id': 5, 'batches_id': 2, 'status': 1},  # Mathematics I
-
-            # Second Semester for SE02
-            {'id': 19, 'courses_id': 6, 'batches_id': 2, 'status': 1},  # Japanese II
-            {'id': 20, 'courses_id': 7, 'batches_id': 2, 'status': 1},  # Database Systems
-            {'id': 21, 'courses_id': 8, 'batches_id': 2, 'status': 1},  # Web Programming
-            {'id': 22, 'courses_id': 9, 'batches_id': 2, 'status': 0},  # Mathematics II
 
         ]
         
@@ -393,22 +382,27 @@ class Command(BaseCommand):
         """Create lecturer records"""
         lecturers_data = [
             {
+                'id': 1,
                 'name': 'Mewan Dissanayake',
                 'auth_user_id': 31
             },
             {
+                'id': 2,
                 'name': 'Chobodhi Silva',
                 'auth_user_id': 32
             },
             {
+                'id': 3,
                 'name': 'Geethika Fernando',
                 'auth_user_id': 33
             },
             {
+                'id': 4,
                 'name': 'Sudeshi Perera',
                 'auth_user_id': 34
             },
             {
+                'id': 5,
                 'name':'Janith perera',
                 'auth_user_id':18
             }
@@ -416,6 +410,15 @@ class Command(BaseCommand):
         
         for lecturer_data in lecturers_data:
             Lecturers.objects.create(**lecturer_data)
+            
+    def create_courses_lecturers(self):
+        """Create courses lecturers records"""
+        lecturerCourseEnrollments_data = [
+            {'id': 1, 'lectures_id': 5, 'courses_id': 13}
+        ]
+        
+        for lecturerCourseEnrollment_data in lecturerCourseEnrollments_data:
+            CoursesLecturer.objects.create(**lecturerCourseEnrollment_data)
 
     def create_students(self):
         """Create student records"""
@@ -452,8 +455,9 @@ class Command(BaseCommand):
             
             # Third Semester
             {'enroll_id': 10, 'marks': 85.5, 'students_id': 2, 'courses_id': 10, 'level': 3},  # Data Structures
-            {'enroll_id': 11, 'marks': 87.2, 'students_id': 2, 'courses_id': 11, 'level': 3},  # Data StructuresSoftware Architecture
-            {'enroll_id': 12, 'marks': 89.0, 'students_id': 2, 'courses_id': 12, 'level': 3},  # Data StructuresVisual Programming
+            {'enroll_id': 11, 'marks': 87.2, 'students_id': 2, 'courses_id': 11, 'level': 3},  # Software Architecture
+            {'enroll_id': 12, 'marks': 89.0, 'students_id': 2, 'courses_id': 12, 'level': 3},  # Visual Programming
+            {'enroll_id': 13, 'marks': 52.0, 'students_id': 2, 'courses_id': 13, 'level': 3},
    
 
             # First Semester-avishka
@@ -473,72 +477,9 @@ class Command(BaseCommand):
             {'enroll_id': 23, 'marks': 75.5, 'students_id': 1, 'courses_id': 10, 'level': 3},  # Data Structures
             {'enroll_id': 24, 'marks': 77.2, 'students_id': 1, 'courses_id': 11, 'level': 3},  # Software Architecture
             {'enroll_id': 25, 'marks': 76.0, 'students_id': 1, 'courses_id': 12, 'level': 3},  # Visual Programming
-            
+            {'enroll_id': 26, 'marks': 31.1, 'students_id': 1, 'courses_id': 13, 'level': 3},
 
-             # First Semester - SE02 Students (Oneli - id: 3)
-            {'enroll_id': 27, 'marks': 82.5, 'students_id': 3, 'courses_id': 1, 'level': 1},  # Japanese I
-            {'enroll_id': 28, 'marks': 78.4, 'students_id': 3, 'courses_id': 2, 'level': 1},  # Computer Fundamentals
-            {'enroll_id': 29, 'marks': 85.2, 'students_id': 3, 'courses_id': 3, 'level': 1},  # Programming Fundamentals
-            {'enroll_id': 30, 'marks': 79.6, 'students_id': 3, 'courses_id': 4, 'level': 1},  # Technical Writing
-            {'enroll_id': 31, 'marks': 76.8, 'students_id': 3, 'courses_id': 5, 'level': 1},  # Mathematics I
-
-            # Second Semester - Oneli
-            {'enroll_id': 32, 'marks': 81.2, 'students_id': 3, 'courses_id': 6, 'level': 2},  # Japanese II
-            {'enroll_id': 33, 'marks': 83.5, 'students_id': 3, 'courses_id': 7, 'level': 2},  # Database Systems
-            {'enroll_id': 34, 'marks': 84.7, 'students_id': 3, 'courses_id': 8, 'level': 2},  # Web Programming
         
-
-            # First Semester - Dumindu (id: 4)
-            {'enroll_id': 36, 'marks': 75.5, 'students_id': 4, 'courses_id': 1, 'level': 1},  # Japanese I
-            {'enroll_id': 37, 'marks': 82.4, 'students_id': 4, 'courses_id': 2, 'level': 1},  # Computer Fundamentals
-            {'enroll_id': 38, 'marks': 79.2, 'students_id': 4, 'courses_id': 3, 'level': 1},  # Programming Fundamentals
-            {'enroll_id': 39, 'marks': 81.6, 'students_id': 4, 'courses_id': 4, 'level': 1},  # Technical Writing
-            {'enroll_id': 40, 'marks': 73.8, 'students_id': 4, 'courses_id': 5, 'level': 1},  # Mathematics I
-
-            # Second Semester - Dumindu
-            {'enroll_id': 41, 'marks': 77.2, 'students_id': 4, 'courses_id': 6, 'level': 2},  # Japanese II
-            {'enroll_id': 42, 'marks': 80.5, 'students_id': 4, 'courses_id': 7, 'level': 2},  # Database Systems
-            {'enroll_id': 43, 'marks': 78.7, 'students_id': 4, 'courses_id': 8, 'level': 2},  # Web Programming
-            
-
-            # First Semester - Vindi (id: 5)
-            {'enroll_id': 45, 'marks': 88.5, 'students_id': 5, 'courses_id': 1, 'level': 1},  # Japanese I
-            {'enroll_id': 46, 'marks': 86.4, 'students_id': 5, 'courses_id': 2, 'level': 1},  # Computer Fundamentals
-            {'enroll_id': 47, 'marks': 89.2, 'students_id': 5, 'courses_id': 3, 'level': 1},  # Programming Fundamentals
-            {'enroll_id': 48, 'marks': 87.6, 'students_id': 5, 'courses_id': 4, 'level': 1},  # Technical Writing
-            {'enroll_id': 49, 'marks': 85.8, 'students_id': 5, 'courses_id': 5, 'level': 1},  # Mathematics I
-
-            # Second Semester - Vindi
-            {'enroll_id': 50, 'marks': 87.2, 'students_id': 5, 'courses_id': 6, 'level': 2},  # Japanese II
-            {'enroll_id': 51, 'marks': 88.5, 'students_id': 5, 'courses_id': 7, 'level': 2},  # Database Systems
-            {'enroll_id': 52, 'marks': 86.7, 'students_id': 5, 'courses_id': 8, 'level': 2},  # Web Programming
-         
-
-            # First Semester - Suneth (id: 6)
-            {'enroll_id': 54, 'marks': 35.5, 'students_id': 6, 'courses_id': 1, 'level': 1},  # Japanese I - Failed
-            {'enroll_id': 55, 'marks': 72.4, 'students_id': 6, 'courses_id': 2, 'level': 1},  # Computer Fundamentals
-            {'enroll_id': 56, 'marks': 38.2, 'students_id': 6, 'courses_id': 3, 'level': 1},  # Programming Fundamentals - Failed
-            {'enroll_id': 57, 'marks': 68.6, 'students_id': 6, 'courses_id': 4, 'level': 1},  # Technical Writing
-            {'enroll_id': 58, 'marks': 35.8, 'students_id': 6, 'courses_id': 5, 'level': 1},  # Mathematics I - Failed
-
-            # Second Semester - Suneth
-            {'enroll_id': 59, 'marks': 67.2, 'students_id': 6, 'courses_id': 6, 'level': 2},  # Japanese II
-            {'enroll_id': 60, 'marks': 65.5, 'students_id': 6, 'courses_id': 7, 'level': 2},  # Database Systems
-            {'enroll_id': 61, 'marks': 66.7, 'students_id': 6, 'courses_id': 8, 'level': 2},  # Web Programming
-    
-
-            # First Semester - Oshani (id: 7)
-            {'enroll_id': 63, 'marks': 92.5, 'students_id': 7, 'courses_id': 1, 'level': 1},  # Japanese I
-            {'enroll_id': 64, 'marks': 94.4, 'students_id': 7, 'courses_id': 2, 'level': 1},  # Computer Fundamentals
-            {'enroll_id': 65, 'marks': 93.2, 'students_id': 7, 'courses_id': 3, 'level': 1},  # Programming Fundamentals
-            {'enroll_id': 66, 'marks': 91.6, 'students_id': 7, 'courses_id': 4, 'level': 1},  # Technical Writing
-            {'enroll_id': 67, 'marks': 90.8, 'students_id': 7, 'courses_id': 5, 'level': 1},  # Mathematics I
-
-            # Second Semester - Oshani
-            {'enroll_id': 68, 'marks': 93.2, 'students_id': 7, 'courses_id': 6, 'level': 2},  # Japanese II
-            {'enroll_id': 69, 'marks': 92.5, 'students_id': 7, 'courses_id': 7, 'level': 2},  # Database Systems
-            {'enroll_id': 70, 'marks': 94.7, 'students_id': 7, 'courses_id': 8, 'level': 2},  # Web Programming
-
         ]
         
         for enroll_data in enrollments_data:
@@ -624,7 +565,8 @@ class Command(BaseCommand):
             # Mathematics III for SE (30:70 ratio)
             {'id': 51, 'nature': 'Quiz', 'type': 'CA', 'name': 'Math Quiz', 'weights': 55, 'courses_id': 13, 'max_mark': 100},
             {'id': 52, 'nature': 'Quiz', 'type': 'CA', 'name': 'Problem Sets', 'weights': 45, 'courses_id': 13, 'max_mark': 100},
-            {'id': 53, 'nature': 'MCQ', 'type': 'FE', 'name': 'Final Exam', 'weights': 100, 'courses_id': 13, 'max_mark': 100},
+            {'id': 53, 'nature': 'Essay', 'type': 'FE', 'name': 'Final Exam', 'weights': 40, 'courses_id': 13, 'max_mark': 100},
+            {'id': 54, 'nature': 'Essay', 'type': 'FE', 'name': 'Final Exam', 'weights': 60, 'courses_id': 13, 'max_mark': 100},
 
         ]
         
@@ -651,14 +593,14 @@ class Command(BaseCommand):
             {'id': 9, 'students_id': 2, 'criterias_id': 9, 'mark': '88'},   # Programming Quiz
             {'id': 10, 'students_id': 2, 'criterias_id': 10, 'mark': '92'}, # Programming Assignment
             {'id': 11, 'students_id': 2, 'criterias_id': 11, 'mark': '89'}, # Mini Project
-            {'id': 12, 'students_id': 2, 'criterias_id': 12, 'mark': '85'}, # Final Theory
-            {'id': 13, 'students_id': 2, 'criterias_id': 13, 'mark': '88'}, # Final Practical
+            {'id': 12, 'students_id': 2, 'criterias_id': 12, 'mark': '85'}, # Final Theoryca
+            {'id': 13, 'students_id': 2, 'criterias_id': 13, 'mark': '88'}, # Final Practil
 
             # Technical Writing
-            {'id': 14, 'students_id': 2, 'criterias_id': 14, 'mark': '92'}, # Writing Assignment 1
-            {'id': 15, 'students_id': 2, 'criterias_id': 15, 'mark': '90'}, # Documentation Project
-            {'id': 16, 'students_id': 2, 'criterias_id': 16, 'mark': '88'}, # Oral Presentation
-            {'id': 17, 'students_id': 2, 'criterias_id': 17, 'mark': '89'}, # Final Assessment
+            {'id': 14, 'students_id': 2, 'criterias_id': 14, 'mark': '20'}, # Writing Assignment 1
+            {'id': 15, 'students_id': 2, 'criterias_id': 15, 'mark': '16'}, # Documentation Project
+            {'id': 16, 'students_id': 2, 'criterias_id': 16, 'mark': '23'}, # Oral Presentation
+            {'id': 17, 'students_id': 2, 'criterias_id': 17, 'mark': '27'}, # Final Assessment
 
             # Mathematics I for SE
             {'id': 18, 'students_id': 2, 'criterias_id': 18, 'mark': '84'}, # Math Quiz 1
@@ -708,11 +650,11 @@ class Command(BaseCommand):
             {'id': 48, 'students_id': 2, 'criterias_id': 48, 'mark': '88'}, # Implementation Task
             {'id': 49, 'students_id': 2, 'criterias_id': 49, 'mark': '89'}, # Final Theory
             {'id': 50, 'students_id': 2, 'criterias_id': 50, 'mark': '90'}, # Final Practical
-
+            
             # Mathematics III for SE
-            {'id': 51, 'students_id': 2, 'criterias_id': 51, 'mark': '85'}, # Math Quiz
-            {'id': 52, 'students_id': 2, 'criterias_id': 52, 'mark': '84'}, # Problem Sets
-            {'id': 53, 'students_id': 2, 'criterias_id': 53, 'mark': '85'}, # Final Exam
+            {'id': 51, 'students_id': 2, 'criterias_id': 51, 'mark': '90'}, # Quiz
+            {'id': 52, 'students_id': 2, 'criterias_id': 52, 'mark': '89'}, # Quiz
+            {'id': 53, 'students_id': 2, 'criterias_id': 53, 'mark': '88'}, # Essay
 
             # Avishka's criteria marks
 
@@ -723,10 +665,10 @@ class Command(BaseCommand):
             {'id': 57, 'students_id': 1, 'criterias_id': 4, 'mark': '67'},  # Final Oral
 
             # Computer Fundamentals
-            {'id': 58, 'students_id': 1, 'criterias_id': 5, 'mark': '74'},  # Theory Quiz
-            {'id': 59, 'students_id': 1, 'criterias_id': 6, 'mark': '72'},  # Lab Assessment
-            {'id': 60, 'students_id': 1, 'criterias_id': 7, 'mark': '71'},  # Final Theory
-            {'id': 61, 'students_id': 1, 'criterias_id': 8, 'mark': '73'},  # Final Practical
+            {'id': 58, 'students_id': 1, 'criterias_id': 5, 'mark': '21'},  # Theory Quiz
+            {'id': 59, 'students_id': 1, 'criterias_id': 6, 'mark': '18'},  # Lab Assessment
+            {'id': 60, 'students_id': 1, 'criterias_id': 7, 'mark': '15'},  # Final Theory
+            {'id': 61, 'students_id': 1, 'criterias_id': 8, 'mark': '25'},  # Final Practical
 
             # Programming Fundamentals
             {'id': 62, 'students_id': 1, 'criterias_id': 9, 'mark': '76'},   # Programming Quiz
@@ -745,49 +687,56 @@ class Command(BaseCommand):
             {'id': 71, 'students_id': 1, 'criterias_id': 18, 'mark': '72'},  # Math Quiz 1
             {'id': 72, 'students_id': 1, 'criterias_id': 19, 'mark': '71'},  # Problem Sets
             {'id': 73, 'students_id': 1, 'criterias_id': 20, 'mark': '71'},  # Final Exam
+            
+            # Japanese Language Level II
+            {'id': 74, 'students_id': 1, 'criterias_id': 21, 'mark': '86'}, # Mid-Term Test
+            {'id': 75, 'students_id': 1, 'criterias_id': 22, 'mark': '85'}, # Oral Presentation
+            {'id': 76, 'students_id': 1, 'criterias_id': 23, 'mark': '84'}, # Final Written
+            {'id': 77, 'students_id': 1, 'criterias_id': 24, 'mark': '85'}, # Final Oral
 
-            # Japanese Language Level I - Oneli
-            {'id': 74, 'students_id': 3, 'criterias_id': 1, 'mark': '84'},  # Mid-Term Test
-            {'id': 75, 'students_id': 3, 'criterias_id': 2, 'mark': '81'},  # Oral Presentation
-            {'id': 76, 'students_id': 3, 'criterias_id': 3, 'mark': '83'},  # Final Written
-            {'id': 77, 'students_id': 3, 'criterias_id': 4, 'mark': '82'},  # Final Oral
+            # Database Systems
+            {'id': 78, 'students_id': 1, 'criterias_id': 25, 'mark': '85'}, # Theory Quiz
+            {'id': 79, 'students_id': 1, 'criterias_id': 26, 'mark': '90'}, # Database Project
+            {'id': 80, 'students_id': 1, 'criterias_id': 27, 'mark': '86'}, # Final Theory
+            {'id': 81, 'students_id': 1, 'criterias_id': 28, 'mark': '88'}, # Final Practical
 
-            # Computer Fundamentals - Oneli
-            {'id': 78, 'students_id': 3, 'criterias_id': 5, 'mark': '79'},  # Theory Quiz
-            {'id': 79, 'students_id': 3, 'criterias_id': 6, 'mark': '78'},  # Lab Assessment
-            {'id': 80, 'students_id': 3, 'criterias_id': 7, 'mark': '77'},  # Final Theory
-            {'id': 81, 'students_id': 3, 'criterias_id': 8, 'mark': '80'},  # Final Practical
+            # Web Programming
+            {'id': 82, 'students_id': 1, 'criterias_id': 29, 'mark': '90'}, # Coding Quiz
+            {'id': 83, 'students_id': 1, 'criterias_id': 30, 'mark': '89'}, # Web Project
+            {'id': 84, 'students_id': 1, 'criterias_id': 31, 'mark': '88'}, # Implementation Task
+            {'id': 85, 'students_id': 1, 'criterias_id': 32, 'mark': '87'}, # Final Theory
+            {'id': 86, 'students_id': 1, 'criterias_id': 33, 'mark': '89'}, # Final Practical
 
-            # Japanese Language Level I - Dumindu
-            {'id': 82, 'students_id': 4, 'criterias_id': 1, 'mark': '76'},  # Mid-Term Test
-            {'id': 83, 'students_id': 4, 'criterias_id': 2, 'mark': '75'},  # Oral Presentation
-            {'id': 84, 'students_id': 4, 'criterias_id': 3, 'mark': '74'},  # Final Written
-            {'id': 85, 'students_id': 4, 'criterias_id': 4, 'mark': '77'},  # Final Oral
+            # Mathematics II for S1
+            {'id': 87, 'students_id': 1, 'criterias_id': 34, 'mark': '84'}, # Math Quiz
+            {'id': 88, 'students_id': 1, 'criterias_id': 35, 'mark': '83'}, # Problem Sets
+            {'id': 89, 'students_id': 1, 'criterias_id': 36, 'mark': '82'}, # Final Exam
 
-            # Computer Fundamentals - Dumindu
-            {'id': 86, 'students_id': 4, 'criterias_id': 5, 'mark': '83'},  # Theory Quiz
-            {'id': 87, 'students_id': 4, 'criterias_id': 6, 'mark': '82'},  # Lab Assessment
-            {'id': 88, 'students_id': 4, 'criterias_id': 7, 'mark': '81'},  # Final Theory
-            {'id': 89, 'students_id': 4, 'criterias_id': 8, 'mark': '84'},  # Final Practical
+            # Data Structures and 1lgorithms
+            {'id': 90, 'students_id': 1, 'criterias_id': 37, 'mark': '87'}, # Theory Quiz
+            {'id': 91, 'students_id': 1, 'criterias_id': 38, 'mark': '85'}, # Implementation Project
+            {'id': 92, 'students_id': 1, 'criterias_id': 39, 'mark': '86'}, # Final Theory
+            {'id': 93, 'students_id': 1, 'criterias_id': 40, 'mark': '84'}, # Final Practical
 
-            # Suneth - Poor CA performance example
-            {'id': 90, 'students_id': 6, 'criterias_id': 1, 'mark': '32'},  # Japanese I - Mid-Term Test
-            {'id': 91, 'students_id': 6, 'criterias_id': 2, 'mark': '35'},  # Japanese I - Oral Presentation
-            {'id': 92, 'students_id': 6, 'criterias_id': 3, 'mark': '38'},  # Japanese I - Final Written
-            {'id': 93, 'students_id': 6, 'criterias_id': 4, 'mark': '35'},  # Japanese I - Final Oral
+            # Software Architecture and Design
+            {'id': 94, 'students_id': 1, 'criterias_id': 41, 'mark': '88'}, # Architecture Quiz
+            {'id': 95, 'students_id': 1, 'criterias_id': 42, 'mark': '89'}, # Design Project
+            {'id': 96, 'students_id': 1, 'criterias_id': 43, 'mark': '86'}, # Case Study
+            {'id': 97, 'students_id': 1, 'criterias_id': 44, 'mark': '87'}, # Final Theory
+            {'id': 98, 'students_id': 1, 'criterias_id': 45, 'mark': '88'}, # Final Design Implementation
 
-            # Programming Fundamentals - Suneth's failed subject
-            {'id': 94, 'students_id': 6, 'criterias_id': 9, 'mark': '35'},   # Programming Quiz
-            {'id': 95, 'students_id': 6, 'criterias_id': 10, 'mark': '38'},  # Programming Assignment
-            {'id': 96, 'students_id': 6, 'criterias_id': 11, 'mark': '36'},  # Mini Project
-            {'id': 97, 'students_id': 6, 'criterias_id': 12, 'mark': '40'},  # Final Theory
-            {'id': 98, 'students_id': 6, 'criterias_id': 13, 'mark': '42'},  # Final Practical
+            # Visual Application Programming
+            {'id': 99, 'students_id': 1, 'criterias_id': 46, 'mark': '90'}, # Programming Quiz
+            {'id': 100, 'students_id': 1, 'criterias_id': 47, 'mark': '89'}, # GUI Project
+            {'id': 101, 'students_id': 1, 'criterias_id': 48, 'mark': '88'}, # Implementation Task
+            {'id': 102, 'students_id': 1, 'criterias_id': 49, 'mark': '89'}, # Final Theory
+            {'id': 103, 'students_id': 1, 'criterias_id': 50, 'mark': '90'}, # Final Practical
+            
+            # Mathematics III for SE
+            {'id': 104, 'students_id': 1, 'criterias_id': 51, 'mark': '68'}, # Programming Quiz
+            {'id': 105, 'students_id': 1, 'criterias_id': 52, 'mark': '56'}, # GUI Project
+            {'id': 106, 'students_id': 1, 'criterias_id': 53, 'mark': '44'}, # Implementation Task
 
-            # Oshani - Outstanding performance example
-            {'id': 99, 'students_id': 7, 'criterias_id': 1, 'mark': '93'},   # Japanese I - Mid-Term Test
-            {'id': 100, 'students_id': 7, 'criterias_id': 2, 'mark': '92'},  # Japanese I - Oral Presentation
-            {'id': 101, 'students_id': 7, 'criterias_id': 3, 'mark': '94'},  # Japanese I - Final Written
-            {'id': 102, 'students_id': 7, 'criterias_id': 4, 'mark': '91'},  # Japanese I - Final Oral
         ]
         
         for sc in sc_data:
@@ -813,7 +762,8 @@ class Command(BaseCommand):
             {'id': 10, 'grade': 'A', 's_grade': 'A', 'courses_id': 10, 'students_id': 2},  # Data Structures
             {'id': 11, 'grade': 'A', 's_grade': 'A', 'courses_id': 11, 'students_id': 2},  # Software Architecture
             {'id': 12, 'grade': 'A', 's_grade': 'A', 'courses_id': 12, 'students_id': 2},  # Visual Programming
-            {'id': 13, 'grade': 'C-', 's_grade': 'A', 'courses_id': 13, 'students_id': 2},  # Mathematics III
+            {'id': 13, 'grade': '',  's_grade': 'B-', 'courses_id': 13, 'students_id': 2},  # Visual Programming
+
 
             # Avishka's results
             # First Semester
@@ -833,7 +783,8 @@ class Command(BaseCommand):
             {'id': 23, 'grade': 'B+', 's_grade': 'B+', 'courses_id': 10, 'students_id': 1}, # Data Structures
             {'id': 24, 'grade': 'B+', 's_grade': 'B+', 'courses_id': 11, 'students_id': 1}, # Software Architecture
             {'id': 25, 'grade': 'B+', 's_grade': 'B+', 'courses_id': 12, 'students_id': 1}, # Visual Programming
-            {'id': 26, 'grade': 'B', 's_grade': 'B', 'courses_id': 13, 'students_id': 1},   # Mathematics III
+            {'id': 26, 'grade': '',   's_grade': 'D+', 'courses_id': 13, 'students_id': 1}, # Visual Programming
+
 
             # First Semester - Oneli
             {'id': 27, 'grade': 'A-', 's_grade': 'A-', 'courses_id': 1, 'students_id': 3},  # Japanese I

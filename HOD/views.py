@@ -256,7 +256,6 @@ def assign_lecturer(request, course_id):
                 courses_id=course_id,
                 lectures_id=lecturer_id
             )
-            messages.success(request, 'Lecturer assigned successfully')
             
         except Exception as e:
             messages.error(request, f'Error assigning lecturer: {str(e)}')

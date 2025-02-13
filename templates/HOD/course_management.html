@@ -781,7 +781,7 @@
 
       const data = await response.json();
       if (response.ok) {
-        showAlert(data.message, "success");
+        showSaveSuccess();
         document.querySelector("#assignmentTable tbody").innerHTML = "";
       } else {
         throw new Error(data.message || "Failed to save courses");
@@ -990,6 +990,32 @@ function syncSubjectsWithBatches(movedLevels, movingToAvailable) {
               }
           }
       });
+}
+
+function showSaveSuccess() {
+  Swal.fire({
+      title: 'Saved Successfully',
+      text: 'Courses Declared Successfully',
+      icon: 'success',
+      confirmButtonText: 'Continue',
+      confirmButtonColor: '#1e2532',
+      customClass: {
+          popup: 'animated fadeInDown faster',
+          title: 'text-lg font-semibold',
+          confirmButton: 'px-6 py-2.5 text-sm font-medium transition-colors duration-200'
+      },
+      showClass: {
+          popup: 'animate__animated animate__fadeIn'
+      },
+      hideClass: {
+          popup: 'animate__animated animate__fadeOut'
+      },
+      timer: 3000,
+      timerProgressBar: true,
+      backdrop: `
+          rgba(30, 37, 50, 0.4)
+      `
+  });
 }
 </script>
 {% endblock %}
