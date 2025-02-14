@@ -14,6 +14,7 @@ def add_criterion(request):
     ca_natures = ['In class', 'Quiz']
     fe_natures = ['Essay', 'MCQ']
     
+    #Build context dictionary with programs and nature options.
     context = {
         'programs': programs,
         'ca_natures': ca_natures,
@@ -34,6 +35,7 @@ def get_batches(request):
         if not Programs.objects.filter(id=program_id).exists():
             return JsonResponse({'error': f'Program with ID {program_id} not found'}, status=404)
             
+        # Query active batches for the given program, ordering them by name.
         batches = Batches.objects.filter(
             programs_id=program_id,
             is_active=True
@@ -45,6 +47,7 @@ def get_batches(request):
         batch_list = list(batches.values('id', 'name'))
         print(f"Batch list: {batch_list}")
         
+        # Return the batch list as a JSON response.
         return JsonResponse({'batches': batch_list})
         
     except Exception as e:
@@ -73,6 +76,7 @@ def get_courses(request):
                 
             courses = base_query.filter(coursesbatches__batches_id=batch_id, coursesbatches__status=0)
 
+        # Prepare a list of course details to return in the JSON response.
         course_list = courses.values(
             'id',
             'subjects__name',
@@ -97,6 +101,7 @@ def get_last_number(course_id, assessment_type):
     last_number = 0
     for criterion in existing_criteria:
         try:
+             #Extract digits from the name and convert to an integer
             number = int(''.join(filter(str.isdigit, criterion.name)))
             last_number = max(last_number, number)
         except ValueError:
@@ -108,6 +113,7 @@ def get_next_ca_number(request):
         course_id = request.GET.get('course_id')
         assessment_type = request.GET.get('type')
         
+        # Get the last numeric part from the existing criteria.
         last_number = get_last_number(course_id, assessment_type)
         next_number = last_number + 1
         
@@ -126,8 +132,11 @@ def get_criteria(request):
         course_id = request.GET.get('course_id')
         if not course_id:
             return JsonResponse({'error': 'Course ID is required'}, status=400)
-            
+
+        # Retrieve all criteria for the given course. 
         criteria = Criterias.objects.filter(courses_id=course_id)
+
+        # Convert the queryset to a list of dictionaries with selected fields
         criteria_list = list(criteria.values('id', 'name', 'nature', 'type', 'weights'))
         
         return JsonResponse({'criteria': criteria_list})
@@ -138,6 +147,7 @@ def get_criteria(request):
 def save_criteria(request):
     if request.method == 'POST':
         try:
+            # Parse the JSON body from the request.
             data = json.loads(request.body)
             course_id = data.get('course_id')
             criteria_type = data.get('type')
@@ -160,7 +170,7 @@ def save_criteria(request):
                         )
                         existing_ids.remove(criterion['id'])
                     else:
-                        # Create new
+                         # If it's a new criterion, create a new record in the database.
                         Criterias.objects.create(
                             courses_id=course_id,
                             nature=criterion['nature'],
@@ -169,7 +179,7 @@ def save_criteria(request):
                             weights=criterion['weight']
                         )
                 
-                # Delete removed criteria
+                 # Any remaining IDs in existing_ids are criteria that were removed; delete them.
                 if existing_ids:
                     Criterias.objects.filter(id__in=existing_ids).delete()
                     
