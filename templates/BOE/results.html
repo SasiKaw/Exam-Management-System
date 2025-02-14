@@ -2,10 +2,16 @@
 {% block content %}
 {% csrf_token %}
 <div class="bg-white rounded-lg shadow-sm p-6">
-    <div class="header mb-6">
-        <h1 class="text-2xl font-bold text-gray-800">Results Management</h1>
-        <p class="text-gray-600">Add or update student results</p>
-    </div>
+    {% if user.groups.first.name == 'BOE' %}
+        <div class="header mb-6">
+            <h1 class="text-2xl font-bold text-gray-800">Results Management</h1>
+            <p class="text-gray-600">Add or update student results</p>
+        </div>
+    {% elif user.groups.first.name == 'Lecturer' %}
+        <div class="header mb-6">
+            <h1 class="text-2xl font-bold text-gray-800">Students Results</h1>
+        </div>
+    {% endif %}
 
     <div class="space-y-6">
         <!-- Selection Controls -->
@@ -86,9 +92,11 @@
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Suggested Grade
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Approved Grade
-                            </th>
+                            {% if user.groups.first.name == 'BOE' %}
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Approved Grade
+                                </th>
+                            {% endif %}
                         </tr>
                     </thead>
                     <tbody id="studentsList" class="bg-white divide-y divide-gray-200"></tbody>
@@ -159,12 +167,14 @@
                 <button type="button" onclick="showGradeSummary()" class="mr-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
                     Summary
                 </button>
-
-                <div class="mt-6 text-right">
-                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                        Submit Results
-                    </button>
-                </div>
+                
+                {% if user.groups.first.name == 'BOE' %}
+                    <div class="mt-6 text-right">
+                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                            Submit Results
+                        </button>
+                    </div>
+                {% endif %}
             </form>
         </div>
     </div>
@@ -173,6 +183,8 @@
 <script>
     const grades = ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D', 'E', 
               'NC', 'NE', 'AC', 'AE', 'AA', 'AF'];
+
+    const isBOE = {% if user.groups.first.name == 'BOE' %} true {% else %} false {% endif %};
 
     async function handleProgramChange() {
         const programId = document.getElementById('program').value;
@@ -298,6 +310,7 @@
                             <input type="text" value="${student.system_grade}" 
                                 class="border border-gray-300 rounded-md px-2 py-1 bg-gray-50" readonly>
                         </td>
+                        ${isBOE ? `
                         <td class="px-6 py-4 whitespace-nowrap">
                             <select name="grades[]" class="border border-gray-300 rounded-md px-2 py-1">
                                 <option value="">Select Grade...</option>
@@ -306,6 +319,7 @@
                                 ).join('')}
                             </select>
                         </td>
+                        ` : ''}
                     `;
                     tbody.appendChild(tr);
                 });

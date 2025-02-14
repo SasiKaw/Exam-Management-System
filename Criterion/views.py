@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from django.db.models import Count, Q
 from .models import *
 from django.db import transaction
+from django.contrib.auth.models import User
 
 
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -58,8 +59,11 @@ def get_batches(request):
 
 def get_courses(request):
     try:
+        lecturer = Lecturers.objects.select_related('auth_user').filter(auth_user_id=request.user.id).first()
+        print(lecturer.id)
         batch_id = request.GET.get('batch_id')
         course_id = request.GET.get('course_id')
+        
         
         if not batch_id and not course_id:
             return JsonResponse({'error': 'Either batch_id or course_id is required'}, status=400)
@@ -74,7 +78,8 @@ def get_courses(request):
             if not Batches.objects.filter(id=batch_id).exists():
                 return JsonResponse({'error': f'Batch with ID {batch_id} not found'}, status=404)
                 
-            courses = base_query.filter(coursesbatches__batches_id=batch_id, coursesbatches__status=0)
+            courses = base_query.filter(coursesbatches__batches_id=batch_id, courseslecturer__lectures_id=lecturer.id, coursesbatches__status=0)
+            
 
         # Prepare a list of course details to return in the JSON response.
         course_list = courses.values(

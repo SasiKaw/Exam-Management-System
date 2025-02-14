@@ -124,6 +124,14 @@
               <span>CA Schedule</span>
             </a>
 
+            <a
+              href="{% url 'Results:get_result'%}"
+              class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white"
+            >
+              <i class="fas fa-calendar w-6"></i>
+              <span>Students Results</span>
+            </a>
+
             {% elif user.groups.first.name == 'HOD' %}
             <!-- HOD Navigation Items -->
             <a
